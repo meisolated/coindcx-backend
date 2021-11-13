@@ -1,0 +1,22 @@
+{
+  "name": "coindcx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node testeverything.js",
+    "start": "pm2 start worker.js --name woker && pm2 start api.js --name api"
+  },
+  "author": "Vivek",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "chalk": "^4.1.2",
+    "events": "^3.3.0",
+    "lodash": "^4.17.21",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.7.0",
+    "request": "^2.88.2",
+    "uuid": "^8.3.2"
+  }
+}
