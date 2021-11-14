@@ -4,22 +4,18 @@ const chalk = require("chalk");
 var events = require("events");
 var eventEmitter = new events.EventEmitter();
 
-
-//call database 
-
+//call database
 
 //Events
-eventEmitter.on("databaseConnected", (database) => {})
+eventEmitter.on("databaseConnected", (database) => {});
 
-eventEmitter.on("uptrendDetected", (market) => {})
+eventEmitter.on("uptrendDetected", (market) => {});
 
-eventEmitter.on("downtrendDetected", (market) => {})
+eventEmitter.on("downtrendDetected", (market) => {});
 
-eventEmitter.on("bought", (market) => {})
+eventEmitter.on("bought", (market) => {});
 
-eventEmitter.on("sold", (market) => {})
-
-
+eventEmitter.on("sold", (market) => {});
 
 setInterval(() => {
   log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));

@@ -2,11 +2,13 @@ module.exports = {
   getdateNtime() {
     // current date
     // adjust 0 before single digit date
+    let date_ob = new Date();
+
     let date = ("0" + date_ob.getDate()).slice(-2);
 
     // current month
     let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-    
+
     // current year
     let year = date_ob.getFullYear();
 
@@ -19,6 +21,6 @@ module.exports = {
     // current seconds
     let seconds = date_ob.getSeconds();
 
-    return year + "-" + month + "-" + date;
+    return ` ${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
   },
 };
