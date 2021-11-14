@@ -1,69 +1,46 @@
-const chalk = require("chalk");
-const log = console.log;
-const functions = require('../functions/function')
+const chalk = require("chalk")
+const log = console.log
+const functions = require("../functions/function")
+let time = functions.getdateNtime()
+const error = chalk.bold.red
+const warning = chalk.keyword("orange")
 
 module.exports = {
-  log(data) {
-    const types = {
-      0: "info",
-      1: "success",
-      2: "failed",
-      3: "error",
-      4: "warning",
-    };
-
-    let time = functions.getdateNtime()
-    const who = data.who;
-    let dec = data.dec;
-
-    const error = chalk.bold.red;
-    const warning = chalk.keyword("orange");
-
-    if (data.type == 0) {
-      log(
-        chalk.bold(time) +
-          " " +
-          chalk.blue(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    } else if (data.type == 1) {
-      log(
-        chalk.bold(time) +
-          " " +
-          chalk.green(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    } else if (data.type == 2) {
-      log(
-        chalk.bold(time) +
-          " " +
-          chalk.red(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    } else if (data.type == 3) {
-      log(
-        chalk.bold(time) +
-          " " +
-          error(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    } else if (data.type == 4) {
-      log(
-        chalk.bold(time) +
-          " " +
-          warning(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    } else {
-      log(chalk.bold(time) +
-      " " +
-      warning(` WARNING: No type was sent`));
-      log(
-        chalk.bold(time) +
-          " " +
-          warning(` ${data.who} :`) +
-          chalk.white(` ${data.dec}`)
-      );
-    }
+  //functions
+  error(who, dec) {
+    return log(
+      `${chalk.bold(time)} ${chalk.bgRed(` ERROR `)} ${error(
+        ` ${who} :`
+      )} ${chalk.white(` ${dec}`)}`
+    )
   },
-};
+
+  success(who, dec) {
+    return log(
+      `${chalk.bold(time)} ${chalk.bgGreen(` SUCCESS `)} ${chalk.green(
+        ` ${who} :`
+      )} ${chalk.white(` ${dec}`)}`
+    )
+  },
+  info(who, dec) {
+    return log(
+      `${chalk.bold(time)} ${chalk.bgBlue(` INFO `)} ${chalk.blue(
+        ` ${who} :`
+      )} ${chalk.white(` ${dec}`)}`
+    )
+  },
+  failed(who, dec) {
+    return log(
+      `${chalk.bold(time)} ${chalk.bgRed(` FAILED `)} ${chalk.red(
+        ` ${who} :`
+      )} ${chalk.white(` ${dec}`)}`
+    )
+  },
+  warning(who, dec) {
+    return log(
+      `${chalk.bold(time)} ${chalk.bgYellowBright.blue(` WARNING `)} ${warning(
+        ` ${who} :`
+      )} ${chalk.white(` ${dec}`)}`
+    )
+  },
+}

@@ -8,7 +8,7 @@ pd.set_option('display.max_rows', None)
 warnings.filterwarnings('ignore')
 
 # Replace 'SNTBTC' with the desired market pair.
-url = config.urls2 + "/market_data/candles?pair=I-MKR_INR&interval=5m&limit=100"
+url = config.urls2 + "/market_data/candles?pair=I-CHR_INR&interval=5m&limit=100"
 
 response = requests.get(url)
 data = response.json()
