@@ -8,7 +8,7 @@ pd.set_option('display.max_rows', None)
 warnings.filterwarnings('ignore')
 
 # Replace 'SNTBTC' with the desired market pair.
-url = config.urls2 + "/market_data/candles?pair=I-CHR_INR&interval=5m&limit=100"
+url = config.urls2 + "/market_data/candles?pair=I-CHR_INR&interval=1m&limit=60"
 
 response = requests.get(url)
 data = response.json()
@@ -46,9 +46,9 @@ def supertrend(df, period=7, atr_multiplier=3):
     for current in range(1, len(df.index)):
         previous = current - 1
         if(df['close'][current] > df['upperband'][previous]):
-            df['in_uptrend'][current] = True
-        elif df['close'][current] < df['lowerband'][previous]:
             df['in_uptrend'][current] = False
+        elif df['close'][current] < df['lowerband'][previous]:
+            df['in_uptrend'][current] = True
         else:
             df['in_uptrend'][current] = df['in_uptrend'][previous]
 
