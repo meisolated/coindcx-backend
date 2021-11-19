@@ -10,6 +10,7 @@ class GET {
   async buyNsellQuery(callback) {
     await sql.query(`SELECT * FROM tbl_buy_sell_pool`, async (err, res) => {
       if (err) {
+        callback(null)
         return logger.error(who, err)
       }
       if (res.length) {

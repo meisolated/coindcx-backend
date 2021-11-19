@@ -10,15 +10,12 @@ async function validator() {
   //first get all buy or sell queries
   get.buyNsellQuery(function (result) {
     if (result == null) return logger.info(who, "nothing working fine")
+    let json_data = []
     result.forEach((e) => {
-      if (e["status"] != "new") return
-      if (e["type"] && e["market_name"] && e["status"]) {
-          dcx.getTicker(e["market_name"], function (result) {
-            console.log(result)  
-          })
-      } else {
-        logger.error(who, "Missing Element")
-      }
+      json_data.push(e["market_name"])
+    })
+    dcx.getTicker(json_data, function (result) {
+      console.log(result)
     })
   })
 }
