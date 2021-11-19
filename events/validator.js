@@ -8,14 +8,26 @@ let get = new GET()
 
 async function validator() {
   //first get all buy or sell queries
-  get.buyNsellQuery(function (result) {
+  get.buyNsellQuery(async function (result) {
     if (result == null) return logger.info(who, "nothing working fine")
     let json_data = []
-    result.forEach((e) => {
+    await result.forEach((e) => {
       json_data.push(e["market_name"])
     })
-    dcx.getTicker(json_data, function (result) {
-      console.log(result)
+    await dcx.getTicker(json_data, async function (result) {
+      if (result == null) return
+      // now we have data from the CoinDCX server now we can validate few things
+      await json_data.forEach(async (x) => {
+        result.forEach((y) => {
+          if (x == y["market"]) {
+            
+            // last 24 hrs data + we will need last one week data as well 
+            let buffer = parseFloat(y['high']) - parseFloat(y['low'])
+            
+
+          }
+        })
+      })
     })
   })
 }

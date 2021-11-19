@@ -1,21 +1,6 @@
-// const DCXPublic = require("./coindcx_api/public/api")
+const DCXpublic = require("./coindcx_api/public/api")
+const dcx = new DCXpublic()
 
-// let dcx = new DCXPublic()
-
-// let nothingx = "nothing"
-// async function nothing(nothingx) {
-//   let anything = await dcx.getTicker("nothing", function (result) {
-//     var json = JSON.parse(result)
-//     json.forEach((element) => {
-//       if (element["market"] == "MANAINR") {
-//         console.log(element["last_price"])
-//       }
-//     })
-//   })
-// }
-
-// nothing()
-
-const validator = require("./events/validator")
-
-validator()
+let data = {"market":"I-MANA_INR", "interval": "1d", "limit" : "7"}
+let callback = ""
+dcx.getCandles(data, callback)

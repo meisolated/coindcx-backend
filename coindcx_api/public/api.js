@@ -1,5 +1,7 @@
+const logger = require('../../logger/log')
 const request = require("request")
 const config = require("../../config/config.json")
+const who = "COINDCX_PUBLIC_API"
 
 class DCXPublic {
   constructor() {
@@ -13,11 +15,9 @@ class DCXPublic {
         var json = JSON.parse(body)
         let x = 0
         let list_data = []
-        await json.forEach((e) => {
-          of.forEach((i) => {
+        await json.forEach(async (e) => {
+          await of.forEach(async (i) => {
             if (e["market"] == i) {
-              ++x
-              console.log(x)
               list_data.push({
                 market: e["market"],
                 change_24_hour: e["change_24_hour"],
@@ -32,10 +32,17 @@ class DCXPublic {
             }
           })
         })
-        if (x = 0) return callback(null)
+        if ((x = 0)) return callback(null)
         return callback(list_data)
       }
     )
+  }
+  async getCandles(data, callback){
+    request.get(this.api + `/market_data/candles?pair=${data['market']}&interval=${data['interval']}&limit=${data['limit']}`,function(error, response, body) {
+        console.log(body);
+        var json = JSON.parse(body)
+        if(json['status'] == "error") return logger.error(who, json['message'])
+    })
   }
 }
 
