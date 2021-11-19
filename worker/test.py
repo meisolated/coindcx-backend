@@ -1,8 +1,8 @@
-import requests # Install requests module first.
+import numpy as np
 
-url = "https://api.coindcx.com/exchange/ticker"
+let_list = list(range(0, 99))
 
+ini_array = np.array(let_list)
+res = ini_array[::-1]
 
-response = requests.get(url)
-data = response.json()
-print(data)
+print(res)

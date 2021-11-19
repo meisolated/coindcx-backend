@@ -1,0 +1,7 @@
+{
+    "urls1":"https://api.coindcx.com",
+    "urls2":"https://public.coindcx.com",
+    "api_key" : "",
+    "secret" : "",
+    "tick_interval" : ""
+}

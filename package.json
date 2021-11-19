@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node testeverything.js",
-    "start": "pm2 start worker.js --name woker && pm2 start api.js --name api"
+    "start": "pm2 start worker.js --name worker && pm2 start api.js --name api"
   },
   "author": "Vivek",
   "license": "ISC",

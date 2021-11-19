@@ -1,17 +1,37 @@
-var express = require('express');
-var app = express();
-var fs = require("fs");
+var express = require("express")
+var app = express()
+var bodyParser = require("body-parser")
 
-app.get('/listUsers', function (req, res) {
-//    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
-//       console.log( data );
-//       res.end( data );
-//    });
-res.end( "404 Page not found");
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+)
+app.use(express.json())
+
+var port = process.env.PORT || 8080 // set our port
+
+var router = express.Router() // get an instance of the express Router
+
+// middleware to use for all requests
+router.use(function (req, res, next) {
+  // do logging
+  console.log("Something is happening.")
+  next() // make sure we go to the next routes and don't stop here
 })
 
-var server = app.listen(8081, function () {
-   var host = server.address().address
-   var port = server.address().port
-   console.log("Example app listening at http://%s:%s", host, port)
-})
+router
+  .route("/getFav")
+
+  // create a bear (accessed at POST http://localhost:8080/api/bears)
+  .post(function (req, res) {
+    res.json({ message: "hooray! welcome to our api!" })
+  })
+  .get(function (req, res) {
+    res.json({ message: "hooray! welcome to our api!!!" })
+  })
+
+app.use("/api", router)
+
+app.listen(port)
+console.log("Magic happens on port " + port)

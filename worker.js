@@ -1,4 +1,4 @@
-const config = require("./config.json");
+const config = require("./config/config.json");
 const log = console.log;
 const chalk = require("chalk");
 var events = require("events");
@@ -21,6 +21,6 @@ setInterval(() => {
   log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));
 }, config.tick_interval);
 
-setInterval(() => {
-  log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));
-}, config.tick_interval);
+// setInterval(() => {
+//   log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));
+// }, config.tick_interval);

@@ -1,30 +1,11 @@
-var mysql = require("mysql")
-var logger = require("../logger/log")
-const who = "DATABASE"
+const mysql = require("mysql");
+const dbConfig = require("../config/config.json");
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "coindcx",
-})
+var connection = mysql.createPool({
+  host: dbConfig['db_host'],
+  user: dbConfig['db_user'],
+  password: dbConfig['db_password'],
+  database: dbConfig['db_databse']
+});
 
-class Database {
-  constructor() {
-    connection.connect(function (err) {
-      if (err) {
-        return logger.error(who, err)
-      } else {
-        return logger.success(who, "Connected to Database.")
-      }
-    })
-  }
-  getConnection() {
-    return connection
-  }
-  disconnect() {
-    return connection.end()
-  }
-}
-
-module.exports = new Database()
+module.exports = connection;
