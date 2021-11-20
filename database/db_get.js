@@ -17,6 +17,21 @@ class GET {
         var string = JSON.stringify(res)
         var json = JSON.parse(string)
         // sql.end()
+        sql.release();
+        return callback(json)
+      } else return callback(null)
+    })
+  }
+  async settings(callback) {
+    sql.query(`SELECT * FROM tbl_settings`, async (err, res) => {
+      if (err) {
+        callback(null)
+        return logger.error(who, err)
+      }
+      if (res.length) {
+        var string = JSON.stringify(res)
+        var json = JSON.parse(string)
+        // sql.end()
         return callback(json)
       } else return callback(null)
     })
