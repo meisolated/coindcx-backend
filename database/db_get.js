@@ -8,7 +8,7 @@ class GET {
   constructor() {}
 
   async buyNsellQuery(callback) {
-    await sql.query(`SELECT * FROM tbl_buy_sell_pool`, async (err, res) => {
+    sql.query(`SELECT * FROM tbl_buy_sell_pool`, async (err, res) => {
       if (err) {
         callback(null)
         return logger.error(who, err)
@@ -16,7 +16,7 @@ class GET {
       if (res.length) {
         var string = JSON.stringify(res)
         var json = JSON.parse(string)
-        sql.end()
+        // sql.end()
         return callback(json)
       } else return callback(null)
     })

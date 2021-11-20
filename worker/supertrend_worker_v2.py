@@ -125,7 +125,7 @@ def run_bot():
     check_buy_sell_signals(supertrend_data)
 
 
-schedule.every(30).seconds.do(run_bot)
+schedule.every(20).seconds.do(run_bot)
 
 
 while True:

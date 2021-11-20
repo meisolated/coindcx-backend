@@ -1,7 +1,7 @@
 const sql = require("./db.js")
 const logger = require('../logger/log')
 
-cosnt who = "INSERT DATABASE"
+const who = "INSERT DATABASE"
 class INSERT {
     constructor(){
 
