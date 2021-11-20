@@ -1,6 +1,9 @@
-const DCXpublic = require("./coindcx_api/public/api")
-const dcx = new DCXpublic()
+const request = require('request')
 
-let data = {"market":"I-MANA_INR", "interval": "1d", "limit" : "7"}
-let callback = ""
-dcx.getCandles(data, callback)
+const baseurl = "https://public.coindcx.com"
+
+// Replace the "B-BTC_USDT" with the desired market pair.
+request.get(baseurl + "/market_data/candles?pair=B-BTC_USDT&interval=1m",function(error, response, body) {
+   let resullt = JSON.parse(body)
+   console.log()
+})
