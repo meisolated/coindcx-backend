@@ -1,5 +1,5 @@
 const GET = require("../database/db_get")
-const log = require("../logger/log")
+const log = require("../log/log")
 const get = new GET()
 const who = "BUYER"
 

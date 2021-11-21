@@ -3,7 +3,7 @@ const chalk = require("chalk")
 var events = require("events")
 var eventEmitter = new events.EventEmitter()
 var notifier = require('./notifier/notifier')
-const logger = require('./logger/log')
+const logger = require('./log/log')
 
 //get events
 const uptrendDetected = require("./events/uptrendDetected")

@@ -1,37 +1,37 @@
 var express = require("express")
 var app = express()
+const cors = require("cors")
+
 var bodyParser = require("body-parser")
 
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-)
+var corsOptions = {
+  origin: "http://localhost:8081",
+}
+
+app.use(cors(corsOptions))
+
 app.use(express.json())
 
-var port = process.env.PORT || 8080 // set our port
+app.use(express.urlencoded({ extended: true }))
 
-var router = express.Router() // get an instance of the express Router
+var port = 8080 // set our port
 
-// middleware to use for all requests
-router.use(function (req, res, next) {
-  // do logging
-  console.log("Something is happening.")
-  next() // make sure we go to the next routes and don't stop here
+// var router = express.Router() // get an instance of the express Router
+
+// // middleware to use for all requests
+// router.use(function (req, res, next) {
+//   // do logging
+//   console.log("Something is happening.")
+//   next() // make sure we go to the next routes and don't stop here
+// })
+const PORT = process.env.PORT || 8080
+
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to Isolated application." })
 })
 
-router
-  .route("/getFav")
+require("./api/routes/routes.js")(app)
 
-  // create a bear (accessed at POST http://localhost:8080/api/bears)
-  .post(function (req, res) {
-    res.json({ message: "hooray! welcome to our api!" })
-  })
-  .get(function (req, res) {
-    res.json({ message: "hooray! welcome to our api!!!" })
-  })
-
-app.use("/api", router)
-
-app.listen(port)
-console.log("Magic happens on port " + port)
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`)
+})

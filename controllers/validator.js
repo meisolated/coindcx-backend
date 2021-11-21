@@ -1,8 +1,8 @@
 const DCXPublic = require("../coindcx_api/public/api")
 const GET = require("../database/db_get")
 const UPDATE = require("../database/db_update")
-const logger = require("../logger/log")
-const validateTicker = require("../handler/ticker_handler")
+const logger = require("../log/log")
+const validateTicker = require("./ticker_handler")
 
 const who = "VALIDATOR"
 var dcx = new DCXPublic()
@@ -43,7 +43,7 @@ async function validator(resultx) {
           } else if (callback === "D") {
             update.buyNsellQueryStatusUpdate(id, "denied", (cb) => {
               if (cb.status != null) {
-                logger.warning(who, `Uptrend signal got DENIED for ${resultx["market_name"]}`)
+                logger.info(who, `Uptrend signal got DENIED for ${resultx["market_name"]}`)
               }
             })
           } else {

@@ -1,4 +1,4 @@
-const logger = require("../../logger/log")
+const logger = require("../../log/log")
 const request = require("request")
 const config = require("../../config/config.json")
 const who = "COINDCX_PUBLIC_API"

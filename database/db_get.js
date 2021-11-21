@@ -1,5 +1,5 @@
 const pool = require("./db.js")
-const logger = require("../logger/log")
+const logger = require("../log/log")
 const who = "GET DATABASE"
 
 //re-revamp
