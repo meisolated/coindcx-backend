@@ -11,6 +11,10 @@ var insert = new INSERT()
 module.exports = {
   //functions
   error(who, dec) {
+    //trim
+    dec.trim()
+    dec.replace(/[^0-9\.,]/g, "")
+    dec.substring(0, 298)
     let msg = "Got an error brhh!!"
     let type = "ERROR"
     let json_data = {
@@ -29,6 +33,10 @@ module.exports = {
   },
 
   success(who, dec) {
+    dec.trim()
+    dec.replace(/[^0-9\.,]/g, "")
+    dec.substring(0, 298)
+
     let msg = "Ohh got you"
     let type = "SUCCESS"
     let json_data = {
@@ -46,6 +54,10 @@ module.exports = {
     )
   },
   info(who, dec) {
+    dec.trim()
+    dec.replace(/[^0-9\.,]/g, "")
+    dec.substring(0, 298)
+    
     let msg = "got some info bro"
     let type = "INFO"
     let json_data = {
@@ -63,6 +75,10 @@ module.exports = {
     )
   },
   failed(who, dec) {
+    dec.trim()
+    dec.replace(/[^0-9\.,]/g, "")
+    dec.substring(0, 298)
+
     let msg = "I don't like it but broo i failed"
     let type = "FAILED"
     let json_data = {
@@ -80,6 +96,10 @@ module.exports = {
     )
   },
   warning(who, dec) {
+    dec.trim()
+    dec.replace(/[^0-9\.,]/g, "")
+    dec.substring(0, 298)
+    
     let msg = "I'm Warning you broo, don't do this"
     let type = "WARNING"
     let json_data = {

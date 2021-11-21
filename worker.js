@@ -1,25 +1,37 @@
 const config = require("./config/config.json")
-const log = console.log
 const chalk = require("chalk")
 var events = require("events")
 var eventEmitter = new events.EventEmitter()
+var notifier = require('./notifier/notifier')
+const logger = require('./logger/log')
+
+//get events
+const uptrendDetected = require("./events/uptrendDetected")
 
 //call database
 
 //Events
-eventEmitter.on("databaseConnected", (database) => {})
 
-eventEmitter.on("uptrendDetected", (market) => {})
+notifier.on("uptrendDetected", (market) => {
+  logger.success("UPTREND DETECTED", market['market_name'])
+})
 
-eventEmitter.on("downtrendDetected", (market) => {})
+notifier.on("downtrendDetected", (market) => {
+  console.log(market)
+})
 
-eventEmitter.on("bought", (market) => {})
+notifier.on("bought", (market) => {
+  console.log(market)
+})
 
-eventEmitter.on("sold", (market) => {})
+notifier.on("sold", (market) => {
+  console.log(market)
+})
 
 setInterval(() => {
-  log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));
-}, config.tick_interval);
+  // log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"))
+  uptrendDetected()
+}, config.tick_interval)
 
 // setInterval(() => {
 //   log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));

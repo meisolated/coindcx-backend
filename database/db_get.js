@@ -8,16 +8,17 @@ class GET {
     this.pool = pool
   }
 
-  async buyNsellQuery(callback) {
+  async buyNsellQuery(status, callback) {
     this.pool.getConnection(async function (err, connection) {
-      if (err) return logger.error(who, err)
+      if (err) return console.log(err.message) //logger.error(who, err)
 
       connection.query(
-        `SELECT * FROM tbl_buy_sell_pool`,
+        `SELECT * FROM tbl_buy_sell_pool WHERE status = ? AND type = ?`,
+        [status['status'], status['type']],
         async function (err, res) {
           if (err) {
             callback(null)
-            return logger.error(who, err)
+            return console.log(err.message) //logger.error(who, err)
           }
           if (res.length) {
             var string = JSON.stringify(res)
@@ -27,11 +28,9 @@ class GET {
           } else return callback(null)
         }
       )
-     
     })
   }
   async settings(callback) {
-
     this.pool.getConnection(async function (err, connection) {
       if (err) return logger.error(who, err)
 
@@ -44,11 +43,10 @@ class GET {
           var string = JSON.stringify(res)
           var json = JSON.parse(string)
           connection.destroy()
-          return callback(json)
+          return callback(json[0])
         } else return callback(null)
       })
     })
-   
   }
 }
 
