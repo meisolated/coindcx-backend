@@ -1,5 +1,8 @@
-let dec = "Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''WHERE status = new AND type = Buy'' at line 1"
-dec.trim()
-dec.replace(/[^0-9\.,]/g, "")
-var old = dec.substring(0, 298)
-console.log(old.length)
+
+const GET = require('./database/db_get')
+
+const get = new GET()
+
+get.getPositions(data => {
+    console.log(data)
+})
