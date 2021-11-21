@@ -23,6 +23,22 @@
 // })
 
 //!-----------------------------------------------------------
-const validator = require("./events/validator")
+// const validator = require("./events/validator")
 
-validator()
+// validator()
+
+// const GET = require("./database/db_get")
+
+// const get = new GET()
+
+// get.buyNsellQuery(async function (result) {
+//     console.log(result)
+// })
+
+// get.settings(async function (result) {
+//     console.log(result)
+// })
+
+const logger =require("./logger/log")
+
+logger.error("TESTING", "Error while trying to do this")
