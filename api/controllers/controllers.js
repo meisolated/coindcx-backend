@@ -8,9 +8,9 @@ function verifyApiKey(req) {
   }
 }
 
-exports.getpositions = (req, res) => {
+exports.getPosition = (req, res) => {
   if (verifyApiKey(req)) {
-    Model.getpositions((err, data) => {
+    Model.getPosition(req.body["market_name"], (err, data) => {
       if (err)
         return res.status(500).send({
           status:

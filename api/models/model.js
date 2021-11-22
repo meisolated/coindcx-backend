@@ -6,8 +6,8 @@ var insert = new INSERT()
 
 const Model = () => {}
 
-Model.getPositions = (result) => {
-  get.getPositions((data) => {
+Model.getPosition = (data1 ,result) => {
+  get.getPosition(data1, (data) => {
     if (data == null) return result({ message: "error" }, null) //! this is like result(err, data) . NULL if not found
     return result(null, data)
   })

@@ -4,7 +4,7 @@ module.exports = (app) => {
   var router = require("express").Router()
 
   // Get positions
-  router.get("/getpositions", controllers.getpositions)
+  router.post("/getposition", controllers.getPosition)
 
   // add log
   router.post("/postlog", controllers.postLog)
