@@ -113,19 +113,36 @@ def check_buy_sell_signals(df):
 
 
 def run_bot():
-    print(f"Fetching new bars for {datetime.now().isoformat()}")
-    url = config.urls2 + "/market_data/candles?pair=I-MANA_INR&interval=1m&limit=100"
-    response = requests.get(url)
-    data = response.json()
-    df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
-                      'low', 'close', 'volume', 'time'])
-    df['time'] = pd.to_datetime(df['time'], unit='ms')
-    df = df.sort_values(by='time', ascending=True)
-    supertrend_data = supertrend(df)
-    check_buy_sell_signals(supertrend_data)
+    url = "http://localhost:8080/api/getFav"
+
+    payload = {}
+    headers = {
+        'Content-Type':  'application/json',
+        'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+    json_data = response.json()
+    
+    print(json_data['data'])
+    # for current in json_data:
+    #     print(current['data'])
+    
 
 
-schedule.every(20).seconds.do(run_bot)
+# print(f"Fetching new bars for {datetime.now().isoformat()}")
+# url = config.urls2 + "/market_data/candles?pair=I-MANA_INR&interval=1m&limit=100"
+# response = requests.get(url)
+# data = response.json()
+# df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
+#                   'low', 'close', 'volume', 'time'])
+# df['time'] = pd.to_datetime(df['time'], unit='ms')
+# df = df.sort_values(by='time', ascending=True)
+# supertrend_data = supertrend(df)
+# check_buy_sell_signals(supertrend_data)
+
+
+schedule.every(config.interval).seconds.do(run_bot)
 
 
 while True:
