@@ -1,14 +1,7 @@
-const INSERT = require("./database/db_insert")
+const COINDCX_PUBLIC_API = require("./coindcx_api/public/api")
 
-var insert = new INSERT()
+var coindcx_public = new COINDCX_PUBLIC_API()
 
-let json_data = {
-  market_name: "testing",
-  pair: "I_testing_BTC",
-  current_price: "20.20005",
-  type: "Buy",
-  status: "new",
-}
-insert.buyNsellSignal(json_data, () =>{
+console.log(coindcx_public.getMarketDetails("CRVINR"))
 
-})
+"python3 .\supertrend_worker_v2.py >.\supertrend_worker_v2.out 2>.\supertrend_worker_v2.err"

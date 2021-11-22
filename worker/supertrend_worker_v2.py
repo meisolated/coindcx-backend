@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 import numpy as np
 import warnings
+import logging
+import gc
 import requests
 import config
 import schedule
@@ -16,7 +18,6 @@ let_list = list(range(0, 99))
 
 ini_array = np.array(let_list)
 res = ini_array[::-1]
-
 
 
 def currentTimeUTC():
@@ -67,22 +68,42 @@ def supertrend(df, period=7, atr_multiplier=3):
     return df
 
 
-def check_buy_sell_signals(df, positions):
+def check_buy_sell_signals(df, inpositions, positions):
 
     print("checking for buy and sell signals")
     print(df.tail(5))
     last_row_index = len(df.index) - 1
     previous_row_index = last_row_index - 1
 
+    # send buy and sell signals to database
+    url = "http://localhost:8080/api/postsignal"
+    headers = {
+        'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
-        if not positions:
+        if not inpositions:
+            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high']}&type=Buy&status=new"
+            response = requests.request(
+                "POST", url, headers=headers, data=payload)
+            res = response.json()
+            if(res['status'] == "error"):
+                print("Some Error With The API")
             print("BUY")
+
         else:
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        if positions:
+        if inpositions:
+            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high']}&type=Sell&status=approved"
+            response = requests.request(
+                "POST", url, headers=headers, data=payload)
+            res = response.json()
+            if(res['status'] == "error"):
+                print("Some Error With The API")
             print("changed to downtrend, sell")
             print("Sell")
         else:
@@ -90,44 +111,54 @@ def check_buy_sell_signals(df, positions):
 
 
 def run_bot():
+    try:
+        # get data from local server
+        url = "http://localhost:8080/api/getFav"
 
-    # get data from local server
-    url = "http://localhost:8080/api/getFav"
-
-    payload = {}
-    headers = {
-        'Content-Type':  'application/json',
-        'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-    json_data = response.json()
-
-    for all in json_data['data']:
-        print(f"Fetching new bars for {datetime.now().isoformat()}")
-        url = config.urls2 + \
-            f"/market_data/candles?pair={all['pair']}&interval=1m&limit=100"
-        response = requests.get(url)
-        data = response.json()
-        df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
-                          'low', 'close', 'volume', 'time'])
-        df['time'] = pd.to_datetime(df['time'], unit='ms')
-        df = df.sort_values(by='time', ascending=True)
-        supertrend_data = supertrend(df)
-
-        # get position data for that market
-        url = "http://localhost:8080/api/getposition"
-        payload = 'market_name=MANAINR'
+        payload = {}
         headers = {
-            'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type':  'application/json',
+            'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F'
         }
-        response = requests.request("POST", url, headers=headers, data=payload)
-        positions = response.json()
-        if(len(positions['data']) == 0):
-            check_buy_sell_signals(supertrend_data, False)
-        else:
-            check_buy_sell_signals(supertrend_data, True)
+
+        response = requests.request("GET", url, headers=headers, data=payload)
+        json_data = response.json()
+
+        for all in json_data['data']:
+            print(f"Fetching new bars for {datetime.now().isoformat()}")
+            url = config.urls2 + \
+                f"/market_data/candles?pair={all['pair']}&interval=1m&limit=100"
+            response = requests.get(url)
+            data = response.json()
+            df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
+                              'low', 'close', 'volume', 'time'])
+            df['time'] = pd.to_datetime(df['time'], unit='ms')
+            df = df.sort_values(by='time', ascending=True)
+            supertrend_data = supertrend(df)
+
+            # get position data for that market
+            url = "http://localhost:8080/api/getposition"
+            payload = f"market_name={all['pair']}"
+            headers = {
+                'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            response = requests.request(
+                "POST", url, headers=headers, data=payload)
+            positions = response.json()
+            # print(positions['data'])
+
+            try:
+                if(positions['data'] != 'undefined'):
+                    check_buy_sell_signals(supertrend_data, True, positions)
+            except:
+                positions = {"market_name": all['market'], "pair": all['pair']}
+                check_buy_sell_signals(supertrend_data, False, positions)
+            # else:
+            #     check_buy_sell_signals(supertrend_data, False, positions)
+
+    except Exception as e:
+        logging.error('Caught exception: ' + str(e))
 
 
 schedule.every(config.interval).seconds.do(run_bot)
@@ -135,4 +166,4 @@ schedule.every(config.interval).seconds.do(run_bot)
 
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(10)

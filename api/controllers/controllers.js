@@ -16,7 +16,7 @@ exports.getPosition = (req, res) => {
           status:
             err.message || "Some error occurred while retrieving positions.",
         })
-      else return res.send({ data: data, message: "success" })
+      else return res.send({ data: data, status: "success" })
     })
   } else {
     return res.status(500).send({
@@ -33,7 +33,7 @@ exports.postLog = (req, res) => {
           status:
             err.message || "Some error occurred while retrieving positions.",
         })
-      else return res.send({ message: "success" })
+      else return res.send({ status: "success" })
     })
   } else {
     return res.status(500).send({
@@ -48,7 +48,7 @@ exports.getFav = (req, res) => {
       if (err) {
         return res.status(500).send({ status: "error" })
       } else {
-        return res.send({ data: data, message: "success" })
+        return res.send({ data: data, status: "success" })
       }
     })
   } else {
@@ -64,7 +64,7 @@ exports.postSignal = (req, res) => {
           status:
             err.message || "Some error occurred while retrieving positions.",
         })
-      else return res.send({ message: "success" })
+      else return res.send({ status: "success" })
     })
   } else {
     return res.status(500).send({ status: "invalid api key" })

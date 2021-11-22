@@ -8,7 +8,7 @@ const Model = () => {}
 
 Model.getPosition = (data1 ,result) => {
   get.getPosition(data1, (data) => {
-    if (data == null) return result({ message: "error" }, null) //! this is like result(err, data) . NULL if not found
+    if (data == null) return result({ status: "error" }, null) //! this is like result(err, data) . NULL if not found
     return result(null, data)
   })
 }
@@ -23,11 +23,11 @@ Model.postLogs = (data, result) => {
     isEmpty(data["message"]) &&
     isEmpty(data["type"])
   ) {
-    return result({ message: "missing params" }, null)
+    return result({ status: "missing params" }, null)
   } else {
     insert.forLogger(data, (callback) => {
       if (callback == null) {
-        return result({ message: "error" }, null)
+        return result({ status: "error" }, null)
       } else {
         return result(null, "done")
       }
@@ -38,7 +38,7 @@ Model.postLogs = (data, result) => {
 Model.getFav = (result) => {
   get.favMarket((data) => {
     if (data == null)
-      return result({ message: "error favMarket return null" }, null)
+      return result({ status: "error favMarket return null" }, null)
     else return result(null, data)
   })
 }
@@ -55,11 +55,11 @@ Model.postSignal = (data, result) => {
     isEmpty(data["type"]) &&
     isEmpty(data["status"])
   ) {
-    return result({ message: "missing params" }, null)
+    return result({ status: "missing params" }, null)
   } else {
     insert.buyNsellSignal(data, (callback) => {
       if (callback == null) {
-        return result({ message: "error" }, null)
+        return result({ status: "error" }, null)
       } else {
         return result(null, "done")
       }

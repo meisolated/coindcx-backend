@@ -75,22 +75,26 @@ class GET {
           err.message || "Some Error in getPositions function of db_get.js 1"
         )
       }
-      connection.query("SELECT * FROM tbl_position WHERE market_name = ?",[market_name], async (err, res) => {
-        if (err) {
-          connection.destroy()
-          callback(null)
-          return logger.error(
-            who,
-            err.message || "Some Error in getPosition function of db_get.js 2"
-          )
+      connection.query(
+        "SELECT * FROM tbl_position WHERE market_name = ?",
+        [market_name],
+        async (err, res) => {
+          if (err) {
+            connection.destroy()
+            callback(null)
+            return logger.error(
+              who,
+              err.message || "Some Error in getPosition function of db_get.js 2"
+            )
+          }
+          if (res.length) {
+            var string = JSON.stringify(res)
+            var json = JSON.parse(string)
+            connection.destroy()
+            return callback(json)
+          } else return callback(null)
         }
-        if (res.length) {
-          var string = JSON.stringify(res)
-          var json = JSON.parse(string)
-          connection.destroy()
-          return callback(json)
-        } else return callback(null)
-      })
+      )
     })
   }
 
