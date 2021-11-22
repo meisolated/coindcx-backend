@@ -18,17 +18,6 @@ ini_array = np.array(let_list)
 res = ini_array[::-1]
 
 
-def addLogging(logDict: dict):
-    loggingsFile = 'loggings.json'
-
-    with open(loggingsFile) as f:
-        data = json.load(f)
-
-    data.append(logDict)
-
-    with open(loggingsFile, 'w') as f:
-        json.dump(data, f)
-
 
 def currentTimeUTC():
     return datetime.now().strftime('%d/%m/%Y %H:%M:%S')
@@ -78,11 +67,7 @@ def supertrend(df, period=7, atr_multiplier=3):
     return df
 
 
-in_position = False
-
-
-def check_buy_sell_signals(df):
-    global in_position
+def check_buy_sell_signals(df, positions):
 
     print("checking for buy and sell signals")
     print(df.tail(5))
@@ -91,28 +76,22 @@ def check_buy_sell_signals(df):
 
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
-        if not in_position:
+        if not positions:
             print("BUY")
-            addLogging({'timestamp': currentTimeUTC(),
-                       'level': 'error', 'traceback': "BUY BITCH"})
-            in_position = True
         else:
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        if in_position:
+        if positions:
             print("changed to downtrend, sell")
             print("Sell")
-            addLogging({'timestamp': currentTimeUTC(),
-                       'level': 'error', 'traceback': "SELL BITCH"})
-            in_position = False
         else:
-            addLogging({'timestamp': currentTimeUTC(),
-                       'level': 'error', 'traceback': "We are not in position BITCH"})
             print("You aren't in position, nothing to sell")
 
 
 def run_bot():
+
+    # get data from local server
     url = "http://localhost:8080/api/getFav"
 
     payload = {}
@@ -123,23 +102,32 @@ def run_bot():
 
     response = requests.request("GET", url, headers=headers, data=payload)
     json_data = response.json()
-    
-    print(json_data['data'])
-    # for current in json_data:
-    #     print(current['data'])
-    
 
+    for all in json_data['data']:
+        print(f"Fetching new bars for {datetime.now().isoformat()}")
+        url = config.urls2 + \
+            f"/market_data/candles?pair={all['pair']}&interval=1m&limit=100"
+        response = requests.get(url)
+        data = response.json()
+        df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
+                          'low', 'close', 'volume', 'time'])
+        df['time'] = pd.to_datetime(df['time'], unit='ms')
+        df = df.sort_values(by='time', ascending=True)
+        supertrend_data = supertrend(df)
 
-# print(f"Fetching new bars for {datetime.now().isoformat()}")
-# url = config.urls2 + "/market_data/candles?pair=I-MANA_INR&interval=1m&limit=100"
-# response = requests.get(url)
-# data = response.json()
-# df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
-#                   'low', 'close', 'volume', 'time'])
-# df['time'] = pd.to_datetime(df['time'], unit='ms')
-# df = df.sort_values(by='time', ascending=True)
-# supertrend_data = supertrend(df)
-# check_buy_sell_signals(supertrend_data)
+        # get position data for that market
+        url = "http://localhost:8080/api/getposition"
+        payload = 'market_name=MANAINR'
+        headers = {
+            'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload)
+        positions = response.json()
+        if(len(positions['data']) == 0):
+            check_buy_sell_signals(supertrend_data, False)
+        else:
+            check_buy_sell_signals(supertrend_data, True)
 
 
 schedule.every(config.interval).seconds.do(run_bot)
