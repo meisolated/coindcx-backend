@@ -1,8 +1,14 @@
+const INSERT = require("./database/db_insert")
 
-const GET = require('./database/db_get')
+var insert = new INSERT()
 
-const get = new GET()
+let json_data = {
+  market_name: "testing",
+  pair: "I_testing_BTC",
+  current_price: "20.20005",
+  type: "Buy",
+  status: "new",
+}
+insert.buyNsellSignal(json_data, () =>{
 
-get.getPositions(data => {
-    console.log(data)
 })

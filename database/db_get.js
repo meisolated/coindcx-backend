@@ -12,8 +12,8 @@ class GET {
     this.pool.getConnection(async function (err, connection) {
       if (err) {
         connection.destroy()
-        return console.log(err.message)
-      } //logger.error(who, err)
+        return logger.error(who, err.message)
+      }
 
       connection.query(
         `SELECT * FROM tbl_buy_sell_pool WHERE status = ? AND type = ?`,
@@ -22,7 +22,7 @@ class GET {
           if (err) {
             connection.destroy()
             callback(null)
-            return console.log(err.message) //logger.error(who, err)
+            return logger.error(who, err.message)
           }
           if (res.length) {
             var string = JSON.stringify(res)
@@ -91,6 +91,43 @@ class GET {
           return callback(json)
         } else return callback(null)
       })
+    })
+  }
+
+  async favMarket(callback) {
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        connection.destroy()
+        return logger.error(
+          who,
+          err.message || "Some Error in getPositions function of db_get.js 1"
+        )
+      }
+      connection.query(
+        "SELECT * FROM tbl_fav WHERE status = ?",
+        ["active"],
+        async (err, res) => {
+          if (err) {
+            connection.destroy()
+            callback(null)
+            return logger.error(
+              who,
+              err.message ||
+                "Some Error in getPositions function of db_get.js 2"
+            )
+          }
+          if (res.length) {
+            var string = JSON.stringify(res)
+            var json = JSON.parse(string)
+            connection.destroy()
+            return callback(json)
+          } else {
+            logger.warning(who, "data in fav table not found")
+            connection.destroy()
+            return callback(null)
+          }
+        }
+      )
     })
   }
 }
