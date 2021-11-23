@@ -1,4 +1,3 @@
-
 // const COINDCX_PUBLIC_API = require("./coindcx_api/public/api")
 
 // var public = new COINDCX_PUBLIC_API()
@@ -10,3 +9,4 @@
 const buyer = require('./controllers/buyer')
 
 buyer()
+

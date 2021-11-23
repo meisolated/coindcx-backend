@@ -1,8 +1,10 @@
 const GET = require("../database/db_get");
+const INSERT = require("../database/db_insert");
 const log = require("../log/log");
 const COINDCX_PUBLIC_API = require("../coindcx_api/public/api");
 const COINDCX_PRIVATE_API = require("../coindcx_api/private/api");
 var get = new GET();
+var insert = new INSERT();
 var public = new COINDCX_PUBLIC_API();
 var private = new COINDCX_PRIVATE_API();
 var who = "BUYER";
@@ -19,6 +21,9 @@ async function buyer() {
   let total_quantity;
   let investable_amt;
   let market_data;
+  let total_value;
+  let user_id;
+  let trade_data;
 
   //get data from buy_sell_pool
   status = { status: "approved", type: "Buy" };
@@ -47,14 +52,20 @@ async function buyer() {
                 key = user["key"];
                 investable_amt = user["allowed_amount"] / total_fav;
                 total_quantity = investable_amt / price_per_unit;
+                total_quantity = parseFloat(total_quantity.toFixed(2));
+                total_value = total_quantity * price_per_unit;
+                user_id = user["id"];
 
                 //verify metrics
-                if (market_data["min_quantity"] > total_quantity)
+                if (
+                  market_data["min_quantity"] > total_quantity ||
+                  market_data["min_price"] > total_value
+                ) {
                   return log.warning(
                     who,
                     `Dont have enough quantity or money to buy ${market}`
                   );
-                else
+                } else {
                   prepare_data = {
                     key: key,
                     secret: secret,
@@ -62,7 +73,28 @@ async function buyer() {
                     price_per_unit: price_per_unit,
                     total_quantity: total_quantity,
                   };
-                console.log(prepare_data);
+
+                  //place order
+                  private.buy(prepare_data, (done_data) => {
+                    if (done_data["code"]) {
+                      log.error(
+                        who,
+                        "While trying to buy :" + done_data["message"]
+                      );
+                    } else {
+                      trade_data = done_data["orders"][0];
+                      trade_data["trade_id"] = trade_data["id"];
+                      trade_data["user_id"] = user["id"];
+                      insert.trade(trade_data, (result) => {
+                        if (result == null)
+                          return log.error(
+                            who,
+                            "Faild to add trade to database"
+                          );
+                      });
+                    }
+                  });
+                }
               });
           });
         });

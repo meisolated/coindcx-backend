@@ -72,6 +72,43 @@ class INSERT {
       }
     })
   }
+  async trade(data, callback){
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        logger.error(who, err.message)
+        connection.destroy()
+        return callback(null)
+      } else {
+        connection.query(
+          "INSERT INTO tbl_trades SET id = NULL, user_id = ?, trade_id = ?, market = ?, order_type = ?, side = ?, status = ?, fee = ?, total_quantity = ?, remaining_quantity = ?, price_per_unit = ?, created_at = ?, updated_at = ?",
+          [
+            data["user_id"],
+            data["trade_id"],
+            data["market"],
+            data["order_type"],
+            data["side"],
+            data["status"],
+            data["fee"],
+            data["total_quantity"],
+            data["remaining_quantity"],
+            data["price_per_unit"],
+            data["created_at"],
+            data["updated_at"]
+          ],
+          (err, res) => {
+            if (err) {
+              logger.error(who, err.message)
+              connection.destroy()
+              return callback(null)
+            } else {
+              connection.destroy()
+              return callback({ message: "success" })
+            }
+          }
+        )
+      }
+    })
+  }
 }
 
 module.exports = INSERT

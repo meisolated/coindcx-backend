@@ -32,6 +32,7 @@ class DCXPrivate {
       total_quantity: data["total_quantity"], //Replace this with the quantity you want
       timestamp: timeStamp,
     };
+    console.log(body);
 
     const payload = new Buffer.from(JSON.stringify(body)).toString();
     const signature = crypto
@@ -50,7 +51,9 @@ class DCXPrivate {
     };
 
     request.post(options, function (error, response, body) {
-      callback(body.JSON());
+      // var json = JSON.parse(body)
+
+      callback(body);
     });
   }
 }
