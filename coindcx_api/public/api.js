@@ -61,7 +61,7 @@ class DCXPublic {
 
         for (let i = 0; i < json.length; i++) {
           if (json[i]["coindcx_name"] === marketname) {
-            console.log(json[i])
+            callback(json[i])
             break
           }
         }

@@ -1,24 +1,58 @@
-// const axios = require("axios");
-// const BASE_URL = `https://astrology-horoscope.p.rapidapi.com`
-// module.exports = {
-//     getCompatibility: (yourName, yourBirthday, theirName, theirBirthday) => axios({
-//         method:"GET",
-//         url : BASE_URL + `/zodiac_compatibility/result/`,
-//         headers: {
-//             "content-type":"application/x-www-form-urlencoded",
-//             "x-rapidapi-host":"astrology-horoscope.p.rapidapi.com",
-//             "x-rapidapi-key": "yourapikey"
-//         },
-//         params: {
-//             mystic_dob: yourBirthday,
-//             mystic_dob2: theirBirthday,
-//             mystic_name: yourName,
-//             mystic_name2: theirName 
-//         }
-//     })
-// }
+const logger = require("../../log/log");
+const config = require("../../config/config.json");
+const who = "COINDCX_PRIVATE_API";
 
+const request = require("request");
+const crypto = require("crypto");
 
-module.exports = {
-    
+class DCXPrivate {
+  constructor() {
+    this.api = config.urls2;
+    this.api1 = config.urls1;
+  }
+
+  async buy(data, callback) {
+    /**
+     * @data => @market @price_per_unit @total_quantity @key & @secret
+     */
+
+    const baseurl = this.api1;
+
+    const timeStamp = Math.floor(Date.now());
+
+    // Place your API key and secret below. You can generate it from the website.
+    const key = data["key"];
+    const secret = data["secret"];
+
+    const body = {
+      side: "buy", //Toggle between 'buy' or 'sell'.
+      order_type: "limit_order", //Toggle between a 'market_order' or 'limit_order'.
+      market: data["market"], //Replace 'SNTBTC' with your desired market.
+      price_per_unit: data["price_per_unit"], //This parameter is only required for a 'limit_order'
+      total_quantity: data["total_quantity"], //Replace this with the quantity you want
+      timestamp: timeStamp,
+    };
+
+    const payload = new Buffer.from(JSON.stringify(body)).toString();
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    const options = {
+      url: baseurl + "/exchange/v1/orders/create",
+      headers: {
+        "X-AUTH-APIKEY": key,
+        "X-AUTH-SIGNATURE": signature,
+      },
+      json: true,
+      body: body,
+    };
+
+    request.post(options, function (error, response, body) {
+      callback(body.JSON());
+    });
+  }
 }
+
+module.exports = DCXPrivate;

@@ -66,10 +66,8 @@ def supertrend(df, period=7, atr_multiplier=3):
 
     return df
 
-in_position = False
 
 def check_buy_sell_signals(df, inpositions, positions):
-    global in_position
 
     print("checking for buy and sell signals")
     print(df.tail(5))
@@ -86,8 +84,8 @@ def check_buy_sell_signals(df, inpositions, positions):
 
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
-        # if not inpositions:
-        if not in_position:
+        if not inpositions:
+
             payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
@@ -95,14 +93,13 @@ def check_buy_sell_signals(df, inpositions, positions):
             if(res['status'] == "error"):
                 print("Some Error With The API")
             print("BUY")
-            in_position = True
 
         else:
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        # if inpositions:
-        if in_position:
+        if inpositions:
+
             payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
@@ -111,7 +108,7 @@ def check_buy_sell_signals(df, inpositions, positions):
                 print("Some Error With The API")
             print("changed to downtrend, sell")
             print("Sell")
-            in_position = False
+
         else:
             print("You aren't in position, nothing to sell")
 
