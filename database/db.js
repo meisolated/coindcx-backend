@@ -6,7 +6,7 @@ var pool = mysql.createPool({
   host: dbConfig["db_host"],
   user: dbConfig["db_user"],
   password: dbConfig["db_password"],
-  database: dbConfig["db_databse"],
+  database: dbConfig["db_database"],
 })
 module.exports = pool
 

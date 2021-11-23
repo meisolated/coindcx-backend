@@ -1,11 +1,10 @@
-import traceback
-import json
 import time
 from datetime import datetime
 import numpy as np
 import warnings
 import logging
-import gc
+from tqdm import tqdm
+import time
 import requests
 import config
 import schedule
@@ -67,12 +66,15 @@ def supertrend(df, period=7, atr_multiplier=3):
 
     return df
 
+in_position = False
 
 def check_buy_sell_signals(df, inpositions, positions):
+    global in_position
 
     print("checking for buy and sell signals")
     print(df.tail(5))
     last_row_index = len(df.index) - 1
+    lengthp = len(df.index)
     previous_row_index = last_row_index - 1
 
     # send buy and sell signals to database
@@ -84,21 +86,24 @@ def check_buy_sell_signals(df, inpositions, positions):
 
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
-        if not inpositions:
-            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high']}&type=Buy&status=new"
+        # if not inpositions:
+        if not in_position:
+            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()
             if(res['status'] == "error"):
                 print("Some Error With The API")
             print("BUY")
+            in_position = True
 
         else:
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        if inpositions:
-            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high']}&type=Sell&status=approved"
+        # if inpositions:
+        if in_position:
+            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()
@@ -106,6 +111,7 @@ def check_buy_sell_signals(df, inpositions, positions):
                 print("Some Error With The API")
             print("changed to downtrend, sell")
             print("Sell")
+            in_position = False
         else:
             print("You aren't in position, nothing to sell")
 
@@ -123,7 +129,7 @@ def run_bot():
 
         response = requests.request("GET", url, headers=headers, data=payload)
         json_data = response.json()
-
+        # print(json_data)
         for all in json_data['data']:
             print(f"Fetching new bars for {datetime.now().isoformat()}")
             url = config.urls2 + \
@@ -152,7 +158,8 @@ def run_bot():
                 if(positions['data'] != 'undefined'):
                     check_buy_sell_signals(supertrend_data, True, positions)
             except:
-                positions = {"market_name": all['market'], "pair": all['pair']}
+                positions = {
+                    "market_name": all['market_name'], "pair": all['pair']}
                 check_buy_sell_signals(supertrend_data, False, positions)
             # else:
             #     check_buy_sell_signals(supertrend_data, False, positions)
@@ -165,5 +172,10 @@ schedule.every(config.interval).seconds.do(run_bot)
 
 
 while True:
+
     schedule.run_pending()
-    time.sleep(10)
+    time.sleep(1)
+    for i in tqdm(range(101),
+                  desc="Loading…",
+                  ascii=False, ncols=75):
+        time.sleep(0.20)
