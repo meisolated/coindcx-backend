@@ -164,8 +164,42 @@ class GET {
 
             return callback(json);
           } else {
-            logger.warning(who, "data in fav table not found");
+            logger.warning(who, "data in users table not found");
 
+            return callback(null);
+          }
+        }
+      );
+    });
+  }
+  async trades(data, callback) {
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        connection.destroy();
+        return logger.error(
+          who,
+          err.message || "Some Error in trade function of db_get.js 1"
+        );
+      }
+      connection.query(
+        "SELECT * FROM tbl_trades WHERE market = ?",
+        [data],
+        async (err, res) => {
+          connection.destroy();
+          if (err) {
+            callback(null);
+            return logger.error(
+              who,
+              err.message || "Some Error in trade function of db_get.js 2"
+            );
+          }
+          if (res.length) {
+            var string = JSON.stringify(res);
+            var json = JSON.parse(string);
+
+            return callback(json);
+          } else {
+            logger.warning(who, "data in trades table not found");
             return callback(null);
           }
         }

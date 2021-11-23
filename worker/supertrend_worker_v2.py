@@ -100,7 +100,7 @@ def check_buy_sell_signals(df, inpositions, positions):
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
         if inpositions:
 
-            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Sell&status=approved"
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()
@@ -156,7 +156,7 @@ def run_bot():
                     check_buy_sell_signals(supertrend_data, True, positions)
             except:
                 positions = {
-                    "market_name": all['market_name'], "pair": all['pair']}
+                    "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
                 check_buy_sell_signals(supertrend_data, False, positions)
             # else:
             #     check_buy_sell_signals(supertrend_data, False, positions)

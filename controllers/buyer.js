@@ -1,10 +1,12 @@
 const GET = require("../database/db_get");
 const INSERT = require("../database/db_insert");
+const UPDATE = require("../database/db_update");
 const log = require("../log/log");
 const COINDCX_PUBLIC_API = require("../coindcx_api/public/api");
 const COINDCX_PRIVATE_API = require("../coindcx_api/private/api");
 var get = new GET();
 var insert = new INSERT();
+var update = new UPDATE();
 var public = new COINDCX_PUBLIC_API();
 var private = new COINDCX_PRIVATE_API();
 var who = "BUYER";
@@ -28,10 +30,11 @@ async function buyer() {
   //get data from buy_sell_pool
   status = { status: "approved", type: "Buy" };
   get.buyNsellQuery(status, async (allQuery) => {
-    allQuery.forEach(async (data) => {
-      market = data["market_name"];
+    if (allQuery == null) return;
+    allQuery.forEach(async (dataz) => {
+      market = dataz["market_name"];
 
-      price_per_unit = data["current_price"];
+      price_per_unit = dataz["current_price"];
 
       //get users
       await get.Users(async (data) => {
@@ -77,11 +80,33 @@ async function buyer() {
                   //place order
                   private.buy(prepare_data, (done_data) => {
                     if (done_data["code"]) {
+                      update.buyNsellQueryStatusUpdate(
+                        dataz["id"],
+                        "Buy failed",
+                        (result) => {
+                          if (result == null)
+                            return log.error(
+                              who,
+                              "While trying to buy :" + done_data["message"]
+                            );
+                        }
+                      );
                       log.error(
                         who,
                         "While trying to buy :" + done_data["message"]
                       );
                     } else {
+                      update.buyNsellQueryStatusUpdate(
+                        dataz["id"],
+                        "Order Placed",
+                        (result) => {
+                          if (result == null)
+                            return log.error(
+                              who,
+                              "While trying to buy :" + done_data["message"]
+                            );
+                        }
+                      );
                       trade_data = done_data["orders"][0];
                       trade_data["trade_id"] = trade_data["id"];
                       trade_data["user_id"] = user["id"];
