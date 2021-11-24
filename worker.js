@@ -7,7 +7,7 @@ const logger = require('./log/log')
 
 //get events
 const uptrendDetected = require("./events/uptrendDetected")
-
+const downtrendDetected = require("./events/downtrendDetected")
 //call database
 
 //Events
@@ -17,7 +17,7 @@ notifier.on("uptrendDetected", (market) => {
 })
 
 notifier.on("downtrendDetected", (market) => {
-  console.log(market)
+  logger.success("DOWNTREND DETECTED", market['market_name'])
 })
 
 notifier.on("bought", (market) => {
@@ -31,8 +31,7 @@ notifier.on("sold", (market) => {
 setInterval(() => {
   // log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"))
   uptrendDetected()
+  downtrendDetected()
 }, config.tick_interval)
 
-// setInterval(() => {
-//   log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"));
-// }, config.tick_interval);
+

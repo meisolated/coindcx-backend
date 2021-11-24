@@ -1,7 +1,7 @@
 const chalk = require("chalk")
 const log = console.log
 const functions = require("../functions/function")
-let time = functions.getdateNtime()
+let time = functions.getdateNtime
 const error = chalk.bold.red
 const warning = chalk.keyword("orange")
 
@@ -14,7 +14,7 @@ module.exports = {
     dec.substring(0, 298)
     let type = "ERROR"
     return log(
-      `${chalk.bold(time)} ${chalk.bgRed(` ${type} `)} ${error(
+      `${chalk.bold(time())} ${chalk.bgRed(` ${type} `)} ${error(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -27,7 +27,7 @@ module.exports = {
 
     let type = "SUCCESS"
     return log(
-      `${chalk.bold(time)} ${chalk.bgGreen(` ${type} `)} ${chalk.green(
+      `${chalk.bold(time())} ${chalk.bgGreen(` ${type} `)} ${chalk.green(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -40,7 +40,7 @@ module.exports = {
     let type = "INFO"
 
     return log(
-      `${chalk.bold(time)} ${chalk.bgBlue(` ${type} `)} ${chalk.blue(
+      `${chalk.bold(time())} ${chalk.bgBlue(` ${type} `)} ${chalk.blue(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -53,7 +53,7 @@ module.exports = {
     let type = "FAILED"
 
     return log(
-      `${chalk.bold(time)} ${chalk.bgRed(` ${type} `)} ${chalk.red(
+      `${chalk.bold(time())} ${chalk.bgRed(` ${type} `)} ${chalk.red(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -66,7 +66,7 @@ module.exports = {
     let type = "WARNING"
 
     return log(
-      `${chalk.bold(time)} ${chalk.bgYellowBright.blue(` ${type} `)} ${warning(
+      `${chalk.bold(time())} ${chalk.bgYellowBright.blue(` ${type} `)} ${warning(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )

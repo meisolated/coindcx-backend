@@ -1,12 +1,14 @@
 const GET = require("../database/db_get");
 const INSERT = require("../database/db_insert");
 const UPDATE = require("../database/db_update");
+const DELETE = require("../database/db_delete")
 const log = require("../log/log");
 const COINDCX_PUBLIC_API = require("../coindcx_api/public/api");
 const COINDCX_PRIVATE_API = require("../coindcx_api/private/api");
 var get = new GET();
 var insert = new INSERT();
 var update = new UPDATE();
+var del = new DELETE()
 var public = new COINDCX_PUBLIC_API();
 var private = new COINDCX_PRIVATE_API();
 var who = "SELLER";
@@ -68,7 +70,9 @@ async function seller() {
                 update.buyNsellQueryStatusUpdate(
                   dataq["id"],
                   "order placed",
-                  () => {}
+                  () => {
+                    del.Position({user_id : users['id'], market_name: market_name})
+                  }
                 );
               });
             } else {

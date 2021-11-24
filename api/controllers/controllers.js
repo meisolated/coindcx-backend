@@ -31,7 +31,7 @@ exports.postLog = (req, res) => {
       if (err)
         return res.status(500).send({
           status:
-            err.message || "Some error occurred while retrieving positions.",
+            err.message || "Some error occurred while retrieving postLog.",
         })
       else return res.send({ status: "success" })
     })
@@ -62,7 +62,7 @@ exports.postSignal = (req, res) => {
       if (err)
         return res.status(500).send({
           status:
-            err.message || "Some error occurred while retrieving positions.",
+            err.status || "Some error occurred while retrieving postSignal.",
         })
       else return res.send({ status: "success" })
     })

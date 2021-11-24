@@ -1,4 +1,4 @@
-const { between } = require("../functions/function")
+const { between } = require("./function")
 
 function validateTicker(dbJson, dcxJson, callback) {
   dcxJson.forEach((y) => {

@@ -1,7 +1,7 @@
 const chalk = require("chalk")
 const log = console.log
 const functions = require("../functions/function")
-let time = functions.getdateNtime()
+let time = functions.getdateNtime
 const error = chalk.bold.red
 const warning = chalk.keyword("orange")
 const INSERT = require("../database/db_insert")
@@ -19,14 +19,14 @@ module.exports = {
     let type = "ERROR"
     let json_data = {
       frm: who,
-      datetime: time,
+      datetime: time(),
       details: dec,
       message: msg,
       type: type,
     }
     insert.forLogger(json_data, () => {})
     return log(
-      `${chalk.bold(time)} ${chalk.bgRed(` ${type} `)} ${error(
+      `${chalk.bold(time())} ${chalk.bgRed(` ${type} `)} ${error(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -41,14 +41,14 @@ module.exports = {
     let type = "SUCCESS"
     let json_data = {
       frm: who,
-      datetime: time,
+      datetime: time(),
       details: dec,
       message: msg,
       type: type,
     }
     insert.forLogger(json_data, () => {})
     return log(
-      `${chalk.bold(time)} ${chalk.bgGreen(` ${type} `)} ${chalk.green(
+      `${chalk.bold(time())} ${chalk.bgGreen(` ${type} `)} ${chalk.green(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -62,14 +62,14 @@ module.exports = {
     let type = "INFO"
     let json_data = {
       frm: who,
-      datetime: time,
+      datetime: time(),
       details: dec,
       message: msg,
       type: type,
     }
     insert.forLogger(json_data, () => {})
     return log(
-      `${chalk.bold(time)} ${chalk.bgBlue(` ${type} `)} ${chalk.blue(
+      `${chalk.bold(time())} ${chalk.bgBlue(` ${type} `)} ${chalk.blue(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -83,14 +83,14 @@ module.exports = {
     let type = "FAILED"
     let json_data = {
       frm: who,
-      datetime: time,
+      datetime: time(),
       details: dec,
       message: msg,
       type: type,
     }
     insert.forLogger(json_data, () => {})
     return log(
-      `${chalk.bold(time)} ${chalk.bgRed(` ${type} `)} ${chalk.red(
+      `${chalk.bold(time())} ${chalk.bgRed(` ${type} `)} ${chalk.red(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )
@@ -104,14 +104,14 @@ module.exports = {
     let type = "WARNING"
     let json_data = {
       frm: who,
-      datetime: time,
+      datetime: time(),
       details: dec,
       message: msg,
       type: type,
     }
     insert.forLogger(json_data, () => {})
     return log(
-      `${chalk.bold(time)} ${chalk.bgYellowBright.blue(` ${type} `)} ${warning(
+      `${chalk.bold(time())} ${chalk.bgYellowBright.blue(` ${type} `)} ${warning(
         ` ${who} :`
       )} ${chalk.white(` ${dec}`)}`
     )

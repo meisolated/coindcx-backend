@@ -1,3 +1,10 @@
-const seller = require('./controllers/seller')
+const BUYER = require("./controllers/buyer");
 
-seller()
+var buyer = new BUYER();
+
+async function nothing(params) {
+  let x = await buyer.buyer(x => console.log(x));
+//   console.log(x);
+}
+
+nothing()

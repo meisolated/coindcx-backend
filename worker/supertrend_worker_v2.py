@@ -86,12 +86,13 @@ def check_buy_sell_signals(df, inpositions, positions):
         print("changed to uptrend, buy")
         if not inpositions:
 
-            payload = f"market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Buy&status=new"
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['close'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()
             if(res['status'] == "error"):
                 print("Some Error With The API")
+            
             print("BUY")
 
         else:
@@ -100,7 +101,7 @@ def check_buy_sell_signals(df, inpositions, positions):
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
         if inpositions:
 
-            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['high'][last_row_index]}&type=Sell&status=approved"
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['close'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()

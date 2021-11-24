@@ -1,7 +1,7 @@
 {
     "urls1":"https://api.coindcx.com",
     "urls2":"https://public.coindcx.com",
-    "tick_interval" : "2000",
+    "tick_interval" : "1000",
     "db_host": "localhost",
     "db_user": "root",
     "db_password": "",
