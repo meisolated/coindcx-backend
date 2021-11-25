@@ -2,6 +2,8 @@ const GET = require("../database/db_get");
 const INSERT = require("../database/db_insert");
 const UPDATE = require("../database/db_update");
 const log = require("../log/log");
+const notifier = require("../notifier/notifier");
+
 const COINDCX_PUBLIC_API = require("../coindcx_api/public/api");
 const COINDCX_PRIVATE_API = require("../coindcx_api/private/api");
 var get = new GET();
@@ -12,7 +14,7 @@ var privatee = new COINDCX_PRIVATE_API();
 var who = "BUYER";
 
 class BUYER {
-  async buyer(x) {
+  async buyer() {
     var status;
     var users = [];
     var market;
@@ -32,8 +34,9 @@ class BUYER {
     //get data from buy_sell_pool
     status = { status: "approved", type: "Buy" };
     get.buyNsellQuery(status, async (allQuery) => {
-      if (allQuery == null) return x("nothing");
+      if (allQuery == null) return;
       allQuery.forEach(async (dataz) => {
+        update.buyNsellQueryStatusUpdate(dataz["id"], "In Progress", () => {});
         market_name = dataz["market_name"];
         market = dataz["market"];
         price_per_unit = dataz["current_price"];
@@ -57,15 +60,15 @@ class BUYER {
                   key = user["key"];
                   investable_amt = user["allowed_amount"] / total_fav;
                   total_quantity = investable_amt / price_per_unit;
-                  total_quantity = parseFloat(total_quantity.toFixed(2));
+                  total_quantity = parseFloat(
+                    total_quantity.toFixed(data["target_currency_precision"])
+                  );
                   total_value = total_quantity * price_per_unit;
+
                   user_id = user["id"];
 
                   //verify metrics
-                  if (
-                    market_data["min_quantity"] > total_quantity ||
-                    market_data["min_price"] > total_value
-                  ) {
+                  if (market_data["min_quantity"] > total_quantity) {
                     return log.warning(
                       who,
                       `Dont have enough quantity or money to buy ${market_name}`
@@ -89,7 +92,7 @@ class BUYER {
                             if (result == null)
                               return log.error(
                                 who,
-                                "While trying to buy :" + done_data["message"]
+                                "problem with buyNsellQueryStatusUpdate"
                               );
                           }
                         );
@@ -98,14 +101,29 @@ class BUYER {
                           "While trying to buy :" + done_data["message"]
                         );
                       } else {
+                        log.success(who, "Order Placed for : " + market);
                         prepare_data = {
                           user_id: user_id,
                           market: market,
                           market_name: market_name,
                           pair: dataz["pair"],
                           price: price_per_unit,
+                          status: "open",
                         };
                         insert.addPosition(prepare_data, (callback) => {});
+
+                        trade_data = done_data["orders"][0];
+                        trade_data["market"] = market;
+                        trade_data["trade_id"] = trade_data["id"];
+                        trade_data["user_id"] = user_id;
+                        // console.log(trade_data)
+                        insert.trade(trade_data, (result) => {
+                          if (result == null)
+                            return log.error(
+                              who,
+                              "Faild to add trade to database"
+                            );
+                        });
                         update.buyNsellQueryStatusUpdate(
                           dataz["id"],
                           "Order Placed",
@@ -117,18 +135,6 @@ class BUYER {
                               );
                           }
                         );
-                        trade_data = done_data["orders"][0];
-                        trade_data["market"] = market;
-                        trade_data["trade_id"] = trade_data["id"];
-                        trade_data["user_id"] = user["id"];
-                        // console.log(trade_data)
-                        insert.trade(trade_data, (result) => {
-                          if (result == null)
-                            return log.error(
-                              who,
-                              "Faild to add trade to database"
-                            );
-                        });
                       }
                     });
                   }

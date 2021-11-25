@@ -1,10 +1,8 @@
-const BUYER = require("./controllers/buyer");
+const request = require('request')
 
-var buyer = new BUYER();
+const baseurl = "https://public.coindcx.com"
 
-async function nothing(params) {
-  let x = await buyer.buyer(x => console.log(x));
-//   console.log(x);
-}
-
-nothing()
+// Replace the "B-BTC_USDT" with the desired market pair.
+request.get(baseurl + "/market_data/orderbook?pair=I-BTC_INR",function(error, response, body) {
+    console.log(body);
+})

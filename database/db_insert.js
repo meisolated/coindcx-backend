@@ -1,7 +1,7 @@
 const pool = require("./db.js");
 // const logger = require("../log/log") cant call insert from insert in logger
 const logger = require("../log/simple");
-const { getdateNtime } = require("../functions/function");
+const { getdateNtime, getdatenmonth } = require("../functions/function");
 
 const who = "INSERT DATABASE";
 class INSERT {
@@ -81,7 +81,7 @@ class INSERT {
         return callback(null);
       } else {
         connection.query(
-          "INSERT INTO tbl_trades SET id = NULL, user_id = ?, trade_id = ?, market = ?, order_type = ?, side = ?, status = ?, fee = ?, total_quantity = ?, remaining_quantity = ?, price_per_unit = ?, created_at = ?, updated_at = ?",
+          "INSERT INTO tbl_trades SET id = NULL, user_id = ?, trade_id = ?, market = ?, order_type = ?, side = ?, status = ?, fee = ?, total_quantity = ?, remaining_quantity = ?, price_per_unit = ?, created_at = ?, updated_at = ?, datenmonth = ?",
           [
             data["user_id"],
             data["trade_id"],
@@ -95,6 +95,7 @@ class INSERT {
             data["price_per_unit"],
             data["created_at"],
             data["updated_at"],
+            getdatenmonth()
           ],
           (err, res) => {
             if (err) {
@@ -118,7 +119,7 @@ class INSERT {
         return callback(null);
       } else {
         connection.query(
-          "INSERT INTO tbl_position SET id = NULL, user_id = ?, market = ?, market_name = ?, pair = ?, price = ?, timestamp = ?",
+          "INSERT INTO tbl_position SET id = NULL, user_id = ?, market = ?, market_name = ?, pair = ?, price = ?, timestamp = ?, status = ?",
           [
             data["user_id"],
             data["market"],
@@ -126,6 +127,7 @@ class INSERT {
             data["pair"],
             data["price"],
             getdateNtime(),
+            data['status'],
           ],
           (err, res) => {
             if (err) {

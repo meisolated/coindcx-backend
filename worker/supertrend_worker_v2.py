@@ -41,7 +41,7 @@ def atr(data, period):
     return atr
 
 
-def supertrend(df, period=7, atr_multiplier=3):
+def supertrend(df, period=10, atr_multiplier=3):
     hl2 = (df['high'] + df['low']) / 2
     df['atr'] = atr(df, period)
     df['upperband'] = hl2 + (atr_multiplier * df['atr'])
@@ -68,7 +68,7 @@ def supertrend(df, period=7, atr_multiplier=3):
 
 
 def check_buy_sell_signals(df, inpositions, positions):
-
+    print("POSITION " + str(inpositions))
     print("checking for buy and sell signals")
     print(df.tail(5))
     last_row_index = len(df.index) - 1
@@ -84,23 +84,24 @@ def check_buy_sell_signals(df, inpositions, positions):
 
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
-        if not inpositions:
 
-            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['close'][last_row_index]}&type=Buy&status=new"
+        if not inpositions:
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['open'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             res = response.json()
             if(res['status'] == "error"):
                 print("Some Error With The API")
-            
+
             print("BUY")
 
         else:
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        if inpositions:
+    # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
 
+        if inpositions:
             payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['close'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
@@ -131,7 +132,7 @@ def run_bot():
         for all in json_data['data']:
             print(f"Fetching new bars for {datetime.now().isoformat()}")
             url = config.urls2 + \
-                f"/market_data/candles?pair={all['pair']}&interval=1m&limit=100"
+                f"/market_data/candles?pair={all['pair']}&interval=15m&limit=100"
             response = requests.get(url)
             data = response.json()
             df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
@@ -142,7 +143,8 @@ def run_bot():
 
             # get position data for that market
             url = "http://localhost:8080/api/getposition"
-            payload = f"market_name={all['pair']}"
+            print(all['market_name'])
+            payload = f"market_name={all['market_name']}"
             headers = {
                 'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -150,15 +152,21 @@ def run_bot():
             response = requests.request(
                 "POST", url, headers=headers, data=payload)
             positions = response.json()
-            # print(positions['data'])
 
             try:
                 if(positions['data'] != 'undefined'):
-                    check_buy_sell_signals(supertrend_data, True, positions)
+                    current_positions = True
+                    positionsq = {
+                        "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
+                    check_buy_sell_signals(
+                        supertrend_data, current_positions, positionsq)
             except:
-                positions = {
+                current_positions = False
+                print("\n=========================================================================================================\n")
+                positionsq = {
                     "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
-                check_buy_sell_signals(supertrend_data, False, positions)
+                check_buy_sell_signals(
+                    supertrend_data, current_positions, positionsq)
             # else:
             #     check_buy_sell_signals(supertrend_data, False, positions)
 
@@ -176,4 +184,4 @@ while True:
     for i in tqdm(range(101),
                   desc="Loading…",
                   ascii=False, ncols=75):
-        time.sleep(0.20)
+        time.sleep(0.40)

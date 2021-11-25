@@ -8,6 +8,10 @@ const logger = require('./log/log')
 //get events
 const uptrendDetected = require("./events/uptrendDetected")
 const downtrendDetected = require("./events/downtrendDetected")
+const seller = require("./controllers/seller")
+const BUYER = require('./controllers/buyer')
+var buyer = new BUYER()
+
 //call database
 
 //Events
@@ -32,6 +36,8 @@ setInterval(() => {
   // log(chalk.bgBlue(" TRADE WORKER: ") + chalk.blue(" Starting Scripts"))
   uptrendDetected()
   downtrendDetected()
+  buyer.buyer()
+  seller()
 }, config.tick_interval)
 
 
