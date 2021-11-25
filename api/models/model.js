@@ -68,4 +68,30 @@ Model.postSignal = (data, result) => {
   }
 };
 
+Model.updateFav = (data, result) => {
+  /**
+   * @data should be like this @market_name @pair @current_price @type @status
+   *
+   */
+  if (
+    isEmpty(data["market"]) &&
+    isEmpty(data["market_name"]) &&
+    isEmpty(data["pair"]) &&
+    isEmpty(data["current_price"]) &&
+    isEmpty(data["type"]) &&
+    isEmpty(data["status"])
+  ) {
+    return result({ status: "missing params" }, null);
+  } else {
+    insert.buyNsellSignal(data, (callback) => {
+      if (callback == null) {
+        return result({ status: "error" }, null);
+      } else {
+        return result(null, "done");
+      }
+    });
+  }
+};
+
+
 module.exports = Model;

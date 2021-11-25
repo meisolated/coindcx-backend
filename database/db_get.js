@@ -206,6 +206,72 @@ class GET {
       );
     });
   }
+
+  async allTrades(callback) {
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        connection.destroy();
+        return logger.error(
+          who,
+          err.message || "Some Error in allTrades function of db_get.js 1"
+        );
+      }
+      connection.query("SELECT * FROM tbl_trades", async (err, res) => {
+        connection.destroy();
+        if (err) {
+          callback(null);
+          return logger.error(
+            who,
+            err.message || "Some Error in allTrades function of db_get.js 2"
+          );
+        }
+        if (res.length) {
+          var string = JSON.stringify(res);
+          var json = JSON.parse(string);
+
+          return callback(json);
+        } else {
+          logger.warning(who, "data in allTrades table not found");
+          return callback(null);
+        }
+      });
+    });
+  }
+  async User(data,callback) {
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        connection.destroy();
+        return logger.error(
+          who,
+          err.message || "Some Error in getUsers function of db_get.js 1"
+        );
+      }
+      connection.query(
+        "SELECT * FROM tbl_user WHERE id = ?",
+        [data['id']],
+        async (err, res) => {
+          connection.destroy();
+          if (err) {
+            callback(null);
+            return logger.error(
+              who,
+              err.message || "Some Error in getUsers function of db_get.js 2"
+            );
+          }
+          if (res.length) {
+            var string = JSON.stringify(res);
+            var json = JSON.parse(string);
+
+            return callback(json);
+          } else {
+            logger.warning(who, "data in users table not found");
+
+            return callback(null);
+          }
+        }
+      );
+    });
+  }
 }
 
 module.exports = GET;

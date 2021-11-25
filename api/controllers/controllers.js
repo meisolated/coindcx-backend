@@ -70,3 +70,16 @@ exports.postSignal = (req, res) => {
     return res.status(500).send({ status: "invalid api key" })
   }
 }
+exports.updateFav = (req, res) => {
+  if (verifyApiKey(req)) {
+    Model.getFav((err, data) => {
+      if (err) {
+        return res.status(500).send({ status: "error" })
+      } else {
+        return res.send({ data: data, status: "success" })
+      }
+    })
+  } else {
+    return res.status(500).send({ status: "invalid api key" })
+  }
+}

@@ -1,7 +1,9 @@
-import requests # Install requests module first.
+import requests
 
-url = "https://public.coindcx.com/market_data/candles?pair=I-MANA_INR&interval=1m" # Replace 'SNTBTC' with the desired market pair.
+def main():
+    resp = requests.get("https://api.cryptowat.ch/markets/kraken/btcinr/orderbook")
+    orderbook = resp.json()['result']
+    print(orderbook)
 
-response = requests.get(url)
-data = response.json()
-print(data)
+if __name__ == '__main__':
+    main()

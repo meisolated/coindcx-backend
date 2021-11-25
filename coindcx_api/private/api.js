@@ -140,37 +140,39 @@ class DCXPrivate {
   }
 
   async cancelAllTrades(data, callback) {
-    const baseurl = this.api1
+    const baseurl = this.api1;
 
     const timeStamp = Math.floor(Date.now());
-    
+
     // Place your API key and secret below. You can generate it from the website.
     const key = data["key"];
     const secret = data["secret"];
-    
-    
-    const   body = {
-            "side": data["side"], //Toggle between 'buy' or 'sell'. Not compulsory
-            "market": data["market"], //Replace 'SNTBTC' with your desired market pair.
-            "timestamp": timeStamp
-        }
-    
-        const payload = new Buffer.from(JSON.stringify(body)).toString();
-        const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex')
-    
-        const options = {
-            url: baseurl + "/exchange/v1/orders/cancel_all",
-            headers: {
-                'X-AUTH-APIKEY': key,
-                'X-AUTH-SIGNATURE': signature
-            },
-            json: true,
-            body: body
-        }
-    
-        request.post(options, function(error, response, body) {
-            callback(body)
-        })
+
+    const body = {
+      side: data["side"], //Toggle between 'buy' or 'sell'. Not compulsory
+      market: data["market"], //Replace 'SNTBTC' with your desired market pair.
+      timestamp: timeStamp,
+    };
+
+    const payload = new Buffer.from(JSON.stringify(body)).toString();
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    const options = {
+      url: baseurl + "/exchange/v1/orders/cancel_all",
+      headers: {
+        "X-AUTH-APIKEY": key,
+        "X-AUTH-SIGNATURE": signature,
+      },
+      json: true,
+      body: body,
+    };
+
+    request.post(options, function (error, response, body) {
+      callback(body);
+    });
   }
 
   async getActiveTrades(data, callback) {
@@ -206,6 +208,41 @@ class DCXPrivate {
 
     request.post(options, function (error, response, body) {
       return callback(body, error);
+    });
+  }
+
+  async getTradeStatus(data, callback) {
+    const baseurl = this.api1;
+
+    const timeStamp = Math.floor(Date.now());
+
+    // Place your API key and secret below. You can generate it from the website.
+    const key = data['key'];
+    const secret = data['secret'];
+
+    const body = {
+      id: data['trade_id'], //Replace it with your Order ID.
+      timestamp: timeStamp,
+    };
+
+    const payload = new Buffer.from(JSON.stringify(body)).toString();
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    const options = {
+      url: baseurl + "/exchange/v1/orders/status",
+      headers: {
+        "X-AUTH-APIKEY": key,
+        "X-AUTH-SIGNATURE": signature,
+      },
+      json: true,
+      body: body,
+    };
+
+    request.post(options, function (error, response, body) {
+      callback(body)
     });
   }
 }

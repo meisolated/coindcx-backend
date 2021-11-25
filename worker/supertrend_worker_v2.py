@@ -132,7 +132,7 @@ def run_bot():
         for all in json_data['data']:
             print(f"Fetching new bars for {datetime.now().isoformat()}")
             url = config.urls2 + \
-                f"/market_data/candles?pair={all['pair']}&interval=15m&limit=100"
+                f"/market_data/candles?pair={all['pair']}&interval={all['intervals']}&limit=100"
             response = requests.get(url)
             data = response.json()
             df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
@@ -154,6 +154,7 @@ def run_bot():
             positions = response.json()
 
             try:
+                print("\n=========================================================================================================\n")
                 if(positions['data'] != 'undefined'):
                     current_positions = True
                     positionsq = {
@@ -184,4 +185,4 @@ while True:
     for i in tqdm(range(101),
                   desc="Loading…",
                   ascii=False, ncols=75):
-        time.sleep(0.40)
+        time.sleep(0.10)
