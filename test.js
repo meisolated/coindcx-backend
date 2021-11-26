@@ -22,13 +22,13 @@ request.get(
         " its value is ",
         asks[propName]
       );
-
     }
-    
+
     //get the last object
     //to get the key
-    console.log(Object.keys(asks)[Object.keys(asks).length-1])
+    console.log(Object.keys(asks)[Object.keys(asks).length - 1]);
     //to get the value
     console.log(asks[Object.keys(asks)[Object.keys(asks).length - 1]]);
   }
 );
+

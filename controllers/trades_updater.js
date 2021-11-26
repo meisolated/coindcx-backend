@@ -8,8 +8,10 @@ var update = new UPDATE();
 async function trade_updater() {
   let prepare_data;
   await get.allTrades(async (allTrades) => {
+    if(allTrades == null) return 
     //for each trade get user key and secret and get order status
     await allTrades.forEach(async (trade) => {
+      if(trade == null) return 
       await get.User({ id: trade["user_id"] }, async (userdata) => {
         userdata = userdata[0];
         prepare_data = {
@@ -19,8 +21,8 @@ async function trade_updater() {
         };
         //time to get the trades
         privatee.getTradeStatus(prepare_data, (trade_status) => {
-
-          if(trade['updated_at'] == trade_status['updated_at']) return console.log("already updated")
+          if(trade_status == null) return 
+          if (trade["updated_at"] == trade_status["updated_at"]) return;
           //time to update trades
           /***
            * @status @fee_amount @total_quantity @remaining_quantity @avg_price @price_per_unit @updated_at
@@ -36,12 +38,11 @@ async function trade_updater() {
           };
 
           //update
-          update.updateTrades(trade["trade_id"], prepare_data, (result) => {console.log(result)});
+          update.updateTrades(trade["trade_id"], prepare_data, (result) => {});
         });
       });
     });
   });
 }
 
-// module.exports = trade_updater;
-trade_updater();
+module.exports = trade_updater;

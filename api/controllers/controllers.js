@@ -1,10 +1,10 @@
-const Model = require("../models/model")
+const Model = require("../models/model");
 
 function verifyApiKey(req) {
   if (req.headers["x-auth-apikey"] === "Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F") {
-    return true
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
@@ -15,15 +15,15 @@ exports.getPosition = (req, res) => {
         return res.status(500).send({
           status:
             err.message || "Some error occurred while retrieving positions.",
-        })
-      else return res.send({ data: data, status: "success" })
-    })
+        });
+      else return res.send({ data: data, status: "success" });
+    });
   } else {
     return res.status(500).send({
       status: "invalid api key",
-    })
+    });
   }
-}
+};
 
 exports.postLog = (req, res) => {
   if (verifyApiKey(req)) {
@@ -32,29 +32,29 @@ exports.postLog = (req, res) => {
         return res.status(500).send({
           status:
             err.message || "Some error occurred while retrieving postLog.",
-        })
-      else return res.send({ status: "success" })
-    })
+        });
+      else return res.send({ status: "success" });
+    });
   } else {
     return res.status(500).send({
       status: "invalid api key",
-    })
+    });
   }
-}
+};
 
 exports.getFav = (req, res) => {
   if (verifyApiKey(req)) {
     Model.getFav((err, data) => {
       if (err) {
-        return res.status(500).send({ status: "error" })
+        return res.status(500).send({ status: "error" });
       } else {
-        return res.send({ data: data, status: "success" })
+        return res.send({ data: data, status: "success" });
       }
-    })
+    });
   } else {
-    return res.status(500).send({ status: "invalid api key" })
+    return res.status(500).send({ status: "invalid api key" });
   }
-}
+};
 
 exports.postSignal = (req, res) => {
   if (verifyApiKey(req)) {
@@ -63,23 +63,28 @@ exports.postSignal = (req, res) => {
         return res.status(500).send({
           status:
             err.status || "Some error occurred while retrieving postSignal.",
-        })
-      else return res.send({ status: "success" })
-    })
+        });
+      else return res.send({ status: "success" });
+    });
   } else {
-    return res.status(500).send({ status: "invalid api key" })
+    return res.status(500).send({ status: "invalid api key" });
   }
-}
+};
 exports.updateFav = (req, res) => {
   if (verifyApiKey(req)) {
-    Model.getFav((err, data) => {
+    Model.updateFav(req.body, (err, data) => {
       if (err) {
-        return res.status(500).send({ status: "error" })
+        return res
+          .status(500)
+          .send({
+            status:
+              err || "Some error occurred while retrieving postSignal.",
+          });
       } else {
-        return res.send({ data: data, status: "success" })
+        return res.send({ data: data, status: "success" });
       }
-    })
+    });
   } else {
-    return res.status(500).send({ status: "invalid api key" })
+    return res.status(500).send({ status: "invalid api key" });
   }
-}
+};

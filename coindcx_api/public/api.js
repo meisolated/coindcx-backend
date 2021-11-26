@@ -18,7 +18,9 @@ class DCXPublic {
           return logger.error(who, json["message"])
         let x = 0
         let list_data = []
+        // console.log(body)
         await json.forEach(async (e) => {
+
           if (e["market"] == of["market_name"]) {
             x += 1
             list_data.push({

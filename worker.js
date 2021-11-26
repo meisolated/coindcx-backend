@@ -9,6 +9,7 @@ const logger = require('./log/log')
 const uptrendDetected = require("./events/uptrendDetected")
 const downtrendDetected = require("./events/downtrendDetected")
 const seller = require("./controllers/seller")
+const trade_updater = require("./controllers/trades_updater")
 const BUYER = require('./controllers/buyer')
 var buyer = new BUYER()
 
@@ -38,6 +39,7 @@ setInterval(() => {
   downtrendDetected()
   buyer.buyer()
   seller()
+  trade_updater()
 }, config.tick_interval)
 
 

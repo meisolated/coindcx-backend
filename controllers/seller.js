@@ -105,6 +105,10 @@ async function seller() {
                   });
                 });
               } else {
+                del.Position(
+                  { user_id: user_id, market_name: market_name },
+                  (callback) => {}
+                );
                 return log.info(who, "Found no curreny to sell");
               }
             });

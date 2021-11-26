@@ -1,8 +1,10 @@
 const { isEmpty } = require("lodash");
 const GET = require("../../database/db_get");
 const INSERT = require("../../database/db_insert");
+const UPDATE = require("../../database/db_update");
 var get = new GET();
 var insert = new INSERT();
+var update = new UPDATE();
 
 const Model = () => {};
 
@@ -18,9 +20,9 @@ Model.postLogs = (data, result) => {
    * @data params should be {@frm @details @message @type}
    */
   if (
-    isEmpty(data["frm"]) &&
-    isEmpty(data["details"]) &&
-    isEmpty(data["message"]) &&
+    isEmpty(data["frm"]) ||
+    isEmpty(data["details"]) ||
+    isEmpty(data["message"]) ||
     isEmpty(data["type"])
   ) {
     return result({ status: "missing params" }, null);
@@ -48,50 +50,58 @@ Model.postSignal = (data, result) => {
    * @data should be like this @market_name @pair @current_price @type @status
    *
    */
+
   if (
-    isEmpty(data["market"]) &&
-    isEmpty(data["market_name"]) &&
-    isEmpty(data["pair"]) &&
-    isEmpty(data["current_price"]) &&
-    isEmpty(data["type"]) &&
-    isEmpty(data["status"])
+    data["market"] === undefined ||
+    data["market_name"] === undefined ||
+    data["pair"] === undefined ||
+    data["current_price"] === undefined ||
+    data["type"] === undefined ||
+    data["status"]  === undefined
   ) {
     return result({ status: "missing params" }, null);
   } else {
-    insert.buyNsellSignal(data, (callback) => {
-      if (callback == null) {
-        return result({ status: "error" }, null);
-      } else {
-        return result(null, "done");
-      }
-    });
+    if (
+      isEmpty(data["market"]) ||
+      isEmpty(data["market_name"]) ||
+      isEmpty(data["pair"]) ||
+      isEmpty(data["current_price"]) ||
+      isEmpty(data["type"]) ||
+      isEmpty(data["status"])
+    ) {
+      return result({ status: "missing params" }, null);
+    } else {
+      insert.buyNsellSignal(data, (callback) => {
+        if (callback == null) {
+          return result({ status: "error" }, null);
+        } else {
+          return result(null, "done");
+        }
+      });
+    }
   }
 };
 
 Model.updateFav = (data, result) => {
   /**
-   * @data should be like this @market_name @pair @current_price @type @status
+   * @data should be like this @market_name @currently_in
    *
    */
-  if (
-    isEmpty(data["market"]) &&
-    isEmpty(data["market_name"]) &&
-    isEmpty(data["pair"]) &&
-    isEmpty(data["current_price"]) &&
-    isEmpty(data["type"]) &&
-    isEmpty(data["status"])
-  ) {
+  if (data["market_name"] === undefined || data["currently_in"] === undefined) {
     return result({ status: "missing params" }, null);
   } else {
-    insert.buyNsellSignal(data, (callback) => {
-      if (callback == null) {
-        return result({ status: "error" }, null);
-      } else {
-        return result(null, "done");
-      }
-    });
+    if (isEmpty(data["market_name"]) || isEmpty(data["currently_in"])) {
+      return result({ status: "missing params" }, null);
+    } else {
+      update.updateFav(data, (callback) => {
+        if (callback == null) {
+          return result({ status: "error" }, null);
+        } else {
+          return result(null, "done");
+        }
+      });
+    }
   }
 };
-
 
 module.exports = Model;

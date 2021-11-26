@@ -14,6 +14,10 @@ module.exports = (app) => {
 
   //add signal
   router.post("/postsignal", controllers.postSignal)
+  
+  // update fav
+  router.post("/updatefav", controllers.updateFav)
+  
   // // Retrieve all Tutorials
   // router.get("/", controllers.findAll);
 

@@ -13,7 +13,7 @@ pd.set_option('display.max_rows', None)
 warnings.filterwarnings('ignore')
 
 
-let_list = list(range(0, 99))
+let_list = list(range(0, 105))
 
 ini_array = np.array(let_list)
 res = ini_array[::-1]
@@ -76,19 +76,27 @@ def check_buy_sell_signals(df, inpositions, positions):
     previous_row_index = last_row_index - 1
 
     # send buy and sell signals to database
-    url = "http://localhost:8080/api/postsignal"
+    update_fav = "http://localhost:8080/api/updatefav"
+    postsignal_url = "http://localhost:8080/api/postsignal"
     headers = {
         'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 
+    fav_payload = f"market_name={positions['market_name']}&currently_in={df['in_uptrend'][last_row_index]}"
+    response = requests.request(
+        "POST", update_fav, headers=headers, data=fav_payload)
+    res = response.json()
+    if(res['status'] == "error"):
+        print("Some Error With The API")
+
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
 
         if not inpositions:
-            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['open'][last_row_index]}&type=Buy&status=new"
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['low'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
-                "POST", url, headers=headers, data=payload)
+                "POST", postsignal_url, headers=headers, data=payload)
             res = response.json()
             if(res['status'] == "error"):
                 print("Some Error With The API")
@@ -99,12 +107,12 @@ def check_buy_sell_signals(df, inpositions, positions):
             print("already in position, nothing to do")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-    # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
+        # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
 
         if inpositions:
-            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['close'][last_row_index]}&type=Sell&status=approved"
+            payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['low'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
-                "POST", url, headers=headers, data=payload)
+                "POST", postsignal_url, headers=headers, data=payload)
             res = response.json()
             if(res['status'] == "error"):
                 print("Some Error With The API")
@@ -128,11 +136,11 @@ def run_bot():
 
         response = requests.request("GET", url, headers=headers, data=payload)
         json_data = response.json()
-        # print(json_data)
+       
         for all in json_data['data']:
             print(f"Fetching new bars for {datetime.now().isoformat()}")
             url = config.urls2 + \
-                f"/market_data/candles?pair={all['pair']}&interval={all['intervals']}&limit=100"
+                f"/market_data/candles?pair={all['pair']}&interval={all['intervals']}&limit=106"
             response = requests.get(url)
             data = response.json()
             df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
@@ -154,7 +162,8 @@ def run_bot():
             positions = response.json()
 
             try:
-                print("\n=========================================================================================================\n")
+                print(
+                    "\n=========================================================================================================\n")
                 if(positions['data'] != 'undefined'):
                     current_positions = True
                     positionsq = {
@@ -163,7 +172,8 @@ def run_bot():
                         supertrend_data, current_positions, positionsq)
             except:
                 current_positions = False
-                print("\n=========================================================================================================\n")
+                print(
+                    "\n=========================================================================================================\n")
                 positionsq = {
                     "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
                 check_buy_sell_signals(
