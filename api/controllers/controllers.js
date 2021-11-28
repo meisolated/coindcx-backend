@@ -15,6 +15,7 @@ exports.getPosition = (req, res) => {
         return res.status(500).send({
           status:
             err.message || "Some error occurred while retrieving positions.",
+          message: err,
         });
       else return res.send({ data: data, status: "success" });
     });
@@ -32,6 +33,7 @@ exports.postLog = (req, res) => {
         return res.status(500).send({
           status:
             err.message || "Some error occurred while retrieving postLog.",
+          message: err,
         });
       else return res.send({ status: "success" });
     });
@@ -44,9 +46,9 @@ exports.postLog = (req, res) => {
 
 exports.getFav = (req, res) => {
   if (verifyApiKey(req)) {
-    Model.getFav((err, data) => {
+    Model.getFav(req.body, (err, data) => {
       if (err) {
-        return res.status(500).send({ status: "error" });
+        return res.status(500).send({ status: "error", message: err });
       } else {
         return res.send({ data: data, status: "success" });
       }
@@ -63,6 +65,7 @@ exports.postSignal = (req, res) => {
         return res.status(500).send({
           status:
             err.status || "Some error occurred while retrieving postSignal.",
+          message: err,
         });
       else return res.send({ status: "success" });
     });
@@ -74,12 +77,10 @@ exports.updateFav = (req, res) => {
   if (verifyApiKey(req)) {
     Model.updateFav(req.body, (err, data) => {
       if (err) {
-        return res
-          .status(500)
-          .send({
-            status:
-              err || "Some error occurred while retrieving postSignal.",
-          });
+        return res.status(500).send({
+          status: err || "Some error occurred while retrieving postSignal.",
+          message: err,
+        });
       } else {
         return res.send({ data: data, status: "success" });
       }

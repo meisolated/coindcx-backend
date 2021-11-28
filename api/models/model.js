@@ -37,12 +37,20 @@ Model.postLogs = (data, result) => {
   }
 };
 
-Model.getFav = (result) => {
-  get.favMarket((data) => {
-    if (data == null)
-      return result({ status: "error favMarket return null" }, null);
-    else return result(null, data);
-  });
+Model.getFav = (data, result) => {
+  if (data["algo"] === undefined) {
+    return result({ status: "missing params" }, null);
+  } else {
+    if (isEmpty(data["algo"])) {
+      return result({ status: "missing params" }, null);
+    } else {
+      get.favMarket(data, (data) => {
+        if (data == null)
+          return result({ status: "error favMarket return null" }, null);
+        else return result(null, data);
+      });
+    }
+  }
 };
 
 Model.postSignal = (data, result) => {
@@ -57,7 +65,7 @@ Model.postSignal = (data, result) => {
     data["pair"] === undefined ||
     data["current_price"] === undefined ||
     data["type"] === undefined ||
-    data["status"]  === undefined
+    data["status"] === undefined
   ) {
     return result({ status: "missing params" }, null);
   } else {

@@ -10,7 +10,7 @@ module.exports = (app) => {
   router.post("/postlog", controllers.postLog)
 
   // get fav market
-  router.get("/getfav", controllers.getFav)
+  router.post("/getfav", controllers.getFav)
 
   //add signal
   router.post("/postsignal", controllers.postSignal)

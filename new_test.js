@@ -5,17 +5,17 @@ var get = new GET();
 const who = "MARKET STATE";
 var firstTime = moment();
 
-get.favMarket((data) => {
-  //   console.info(data);
+get.favMarket({ algo: 0 }, (data) => {
+  console.info(data);
   data.forEach((markets) => {
     let x;
     if (markets["currently_in"] === "True") x = "Uptrend";
     else x = "Downtrend";
 
-    let moment_time = moment()
-    var secondTime = moment.unix(markets['last_update'])
-    var timeDifference = firstTime.diff(secondTime, 'seconds')
-    console.log(timeDifference)
+    let moment_time = moment();
+    var secondTime = moment.unix(markets["last_update"]);
+    var timeDifference = firstTime.diff(secondTime, "seconds");
+    console.log(timeDifference);
     logger.info(
       who,
       `TIME ${moment_time} => ${markets["market_name"]} is in ${x}`

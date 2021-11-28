@@ -93,7 +93,7 @@ def check_buy_sell_signals(df, inpositions, positions):
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
         print("changed to uptrend, buy")
 
-        if not inpositions:
+        if True:
             payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['low'][last_row_index]}&type=Buy&status=new"
             response = requests.request(
                 "POST", postsignal_url, headers=headers, data=payload)
@@ -109,7 +109,7 @@ def check_buy_sell_signals(df, inpositions, positions):
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
         # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
 
-        if inpositions:
+        if True:
             payload = f"market={positions['market']}&market_name={positions['market_name']}&pair={positions['pair']}&current_price={df['low'][last_row_index]}&type=Sell&status=approved"
             response = requests.request(
                 "POST", postsignal_url, headers=headers, data=payload)
@@ -124,68 +124,68 @@ def check_buy_sell_signals(df, inpositions, positions):
 
 
 def run_bot():
-    try:
-        # get data from local server
-        url = "http://localhost:8080/api/getFav"
+    # try:
+    # get data from local server
+    url = "http://localhost:8080/api/getfav"
 
-        payload = {}
+    payload = 'algo=1'
+    headers = {
+        'x-auth-apikey': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    json_data = response.json()
+
+    for all in json_data['data']:
+        print(f"Fetching new bars for {datetime.now().isoformat()}")
+        url = config.urls2 + \
+            f"/market_data/candles?pair={all['pair']}&interval={all['intervals']}&limit=106"
+        response = requests.get(url)
+        data = response.json()
+        df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
+                          'low', 'close', 'volume', 'time'])
+        df['time'] = pd.to_datetime(df['time'], unit='ms')
+        df = df.sort_values(by='time', ascending=True)
+        supertrend_data = supertrend(df)
+
+        # get position data for that market
+        url = "http://localhost:8080/api/getposition"
+        print(all['market_name'])
+        payload = f"market_name={all['market_name']}"
         headers = {
-            'Content-Type':  'application/json',
-            'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F'
+            'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
+        response = requests.request(
+            "POST", url, headers=headers, data=payload)
+        positions = response.json()
 
-        response = requests.request("GET", url, headers=headers, data=payload)
-        json_data = response.json()
-       
-        for all in json_data['data']:
-            print(f"Fetching new bars for {datetime.now().isoformat()}")
-            url = config.urls2 + \
-                f"/market_data/candles?pair={all['pair']}&interval={all['intervals']}&limit=106"
-            response = requests.get(url)
-            data = response.json()
-            df = pd.DataFrame(data[:-1], index=res, columns=['open', 'high',
-                              'low', 'close', 'volume', 'time'])
-            df['time'] = pd.to_datetime(df['time'], unit='ms')
-            df = df.sort_values(by='time', ascending=True)
-            supertrend_data = supertrend(df)
-
-            # get position data for that market
-            url = "http://localhost:8080/api/getposition"
-            print(all['market_name'])
-            payload = f"market_name={all['market_name']}"
-            headers = {
-                'X-AUTH-APIKEY': 'Y4N47wcslRiDqzopGTmcpbtT70yR6Y5F',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-            response = requests.request(
-                "POST", url, headers=headers, data=payload)
-            positions = response.json()
-
-            try:
-                print(
-                    "\n=========================================================================================================\n")
-                if(positions['data'] != 'undefined'):
-                    current_positions = True
-                    positionsq = {
-                        "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
-                    check_buy_sell_signals(
-                        supertrend_data, current_positions, positionsq)
-            except:
-                current_positions = False
-                print(
-                    "\n=========================================================================================================\n")
+        try:
+            print(
+                "\n=========================================================================================================\n")
+            if(positions['data'] != 'undefined'):
+                current_positions = True
                 positionsq = {
                     "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
                 check_buy_sell_signals(
                     supertrend_data, current_positions, positionsq)
-            # else:
-            #     check_buy_sell_signals(supertrend_data, False, positions)
+        except:
+            current_positions = False
+            print(
+                "\n=========================================================================================================\n")
+            positionsq = {
+                "market_name": all['market_name'], "pair": all['pair'], "market": all['market']}
+            check_buy_sell_signals(
+                supertrend_data, current_positions, positionsq)
+        # else:
+        #     check_buy_sell_signals(supertrend_data, False, positions)
 
-    except Exception as e:
-        logging.error('Caught exception: ' + str(e))
+    # except Exception as e:
+    #     logging.error('Caught exception: ' + str(e))
 
 
-schedule.every(config.interval).seconds.do(run_bot)
+schedule.every(5).seconds.do(run_bot)
 
 
 while True:
@@ -195,4 +195,4 @@ while True:
     for i in tqdm(range(101),
                   desc="Loading…",
                   ascii=False, ncols=75):
-        time.sleep(0.10)
+        time.sleep(0.05)

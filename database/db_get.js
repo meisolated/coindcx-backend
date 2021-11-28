@@ -101,7 +101,7 @@ class GET {
     });
   }
 
-  async favMarket(callback) {
+  async favMarket(algo, callback) {
     this.pool.getConnection(async function (err, connection) {
       if (err) {
         connection.destroy();
@@ -111,8 +111,8 @@ class GET {
         );
       }
       connection.query(
-        "SELECT * FROM tbl_fav WHERE status = ?",
-        ["active"],
+        "SELECT * FROM tbl_fav WHERE status = ? AND algo = ?",
+        ["active", algo['algo']],
         async (err, res) => {
           if (err) {
             connection.destroy();
