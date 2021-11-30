@@ -13,7 +13,7 @@ class DCXPrivate {
 
   async buy(data, callback) {
     /**
-     * @data => @market @price_per_unit @total_quantity @key & @secret
+     * @data => @market_name @price_per_unit @total_quantity @key & @secret
      */
     const timeStamp = Math.floor(Date.now());
 
@@ -24,7 +24,7 @@ class DCXPrivate {
     const body = {
       side: "buy", //Toggle between 'buy' or 'sell'.
       order_type: "limit_order", //Toggle between a 'market_order' or 'limit_order'.
-      market: data["market"], //Replace 'SNTBTC' with your desired market.
+      market: data["market_name"], //Replace 'SNTBTC' with your desired market.
       price_per_unit: data["price_per_unit"], //This parameter is only required for a 'limit_order'
       total_quantity: data["total_quantity"], //Replace this with the quantity you want
       timestamp: timeStamp,
@@ -217,11 +217,11 @@ class DCXPrivate {
     const timeStamp = Math.floor(Date.now());
 
     // Place your API key and secret below. You can generate it from the website.
-    const key = data['key'];
-    const secret = data['secret'];
+    const key = data["key"];
+    const secret = data["secret"];
 
     const body = {
-      id: data['trade_id'], //Replace it with your Order ID.
+      id: data["trade_id"], //Replace it with your Order ID.
       timestamp: timeStamp,
     };
 
@@ -233,6 +233,80 @@ class DCXPrivate {
 
     const options = {
       url: baseurl + "/exchange/v1/orders/status",
+      headers: {
+        "X-AUTH-APIKEY": key,
+        "X-AUTH-SIGNATURE": signature,
+      },
+      json: true,
+      body: body,
+    };
+
+    request.post(options, function (error, response, body) {
+      callback(body);
+    });
+  }
+
+  async editTradePrice(data, callback) {
+    const baseurl = this.api1;
+
+    const timeStamp = Math.floor(Date.now());
+    // To check if the timestamp is correct
+    console.log(timeStamp);
+
+    // Place your API key and secret below. You can generate it from the website.
+    const key = data["key"];
+    const secret = data["secret"];
+
+    const body = {
+      id: data["order_id"], // Enter your Order ID here.
+      timestamp: timeStamp,
+      price_per_unit: data["price"], // Enter the new-price here
+    };
+
+    const payload = new Buffer.from(JSON.stringify(body)).toString();
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    const options = {
+      url: baseurl + "/exchange/v1/orders/edit",
+      headers: {
+        "X-AUTH-APIKEY": key,
+        "X-AUTH-SIGNATURE": signature,
+      },
+      json: true,
+      body: body,
+    };
+
+    request.post(options, function (error, response, body) {
+      return callback(body);
+    });
+  }
+  async cancelOrder(data, callback) {
+    const baseurl = this.api1;
+
+    const timeStamp = Math.floor(Date.now());
+    // To check if the timestamp is correct
+    console.log(timeStamp);
+
+    // Place your API key and secret below. You can generate it from the website.
+    const key = data["key"];
+    const secret = data["secret"];
+
+    const body = {
+      id: data["order_id"], //Replace this with your Order ID.
+      timestamp: timeStamp,
+    };
+
+    const payload = new Buffer.from(JSON.stringify(body)).toString();
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    const options = {
+      url: baseurl + "/exchange/v1/orders/cancel",
       headers: {
         "X-AUTH-APIKEY": key,
         "X-AUTH-SIGNATURE": signature,

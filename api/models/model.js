@@ -37,49 +37,42 @@ Model.postLogs = (data, result) => {
   }
 };
 
-Model.getFav = (data, result) => {
-  if (data["algo"] === undefined) {
-    return result({ status: "missing params" }, null);
-  } else {
-    if (isEmpty(data["algo"])) {
-      return result({ status: "missing params" }, null);
-    } else {
-      get.favMarket(data, (data) => {
-        if (data == null)
-          return result({ status: "error favMarket return null" }, null);
-        else return result(null, data);
-      });
-    }
-  }
+Model.getFav = (result) => {
+  get.favMarket((data) => {
+    if (data == null)
+      return result({ status: "error favMarket return null" }, null);
+    else return result(null, data);
+  });
 };
 
-Model.postSignal = (data, result) => {
+
+
+
+
+Model.updatePosition = (data, result) => {
   /**
-   * @data should be like this @market_name @pair @current_price @type @status
+   * @data should be like this @market_name @currently_in
    *
    */
-
   if (
-    data["market"] === undefined ||
-    data["market_name"] === undefined ||
-    data["pair"] === undefined ||
-    data["current_price"] === undefined ||
-    data["type"] === undefined ||
-    data["status"] === undefined
+    data["id"] === undefined ||
+    data["buy_price"] === undefined ||
+    data["sell_price"] === undefined ||
+    data["can_buy"] === undefined ||
+    data["buffer"] === undefined 
   ) {
     return result({ status: "missing params" }, null);
   } else {
     if (
-      isEmpty(data["market"]) ||
-      isEmpty(data["market_name"]) ||
-      isEmpty(data["pair"]) ||
-      isEmpty(data["current_price"]) ||
-      isEmpty(data["type"]) ||
-      isEmpty(data["status"])
+      isEmpty(data["id"]) ||
+      isEmpty(data["buy_price"]) ||
+      isEmpty(data["sell_price"]) ||
+      isEmpty(data["can_buy"]) ||
+      isEmpty(data["buffer"]) 
     ) {
       return result({ status: "missing params" }, null);
     } else {
-      insert.buyNsellSignal(data, (callback) => {
+      update.updatePosition(data, (callback) => {
         if (callback == null) {
           return result({ status: "error" }, null);
         } else {
@@ -90,18 +83,33 @@ Model.postSignal = (data, result) => {
   }
 };
 
-Model.updateFav = (data, result) => {
+Model.insertPosition = (data, result) => {
   /**
-   * @data should be like this @market_name @currently_in
+   * @data should be like this@market @market_name @pair @buy_price @sell_price
    *
    */
-  if (data["market_name"] === undefined || data["currently_in"] === undefined) {
+
+  if (
+    data["market"] === undefined ||
+    data["market_name"] === undefined ||
+    data["pair"] === undefined ||
+    data["buy_price"] === undefined ||
+    data["sell_price"] === undefined || 
+    data["buffer"] === undefined 
+  ) {
     return result({ status: "missing params" }, null);
   } else {
-    if (isEmpty(data["market_name"]) || isEmpty(data["currently_in"])) {
+    if (
+      isEmpty(data["market"]) ||
+      isEmpty(data["market_name"]) ||
+      isEmpty(data["pair"]) ||
+      isEmpty(data["buy_price"]) ||
+      isEmpty(data["sell_price"]) ||
+      isEmpty(data["buffer"])
+    ) {
       return result({ status: "missing params" }, null);
     } else {
-      update.updateFav(data, (callback) => {
+      insert.addPosition(data, (callback) => {
         if (callback == null) {
           return result({ status: "error" }, null);
         } else {

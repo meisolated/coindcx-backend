@@ -66,8 +66,10 @@ class GET {
     });
   }
 
-  async getPosition(market_name, callback) {
+  async getPosition(data, callback) {
     this.pool.getConnection(async function (err, connection) {
+      let query;
+      let bind;
       if (err) {
         connection.destroy();
         return logger.error(
@@ -75,44 +77,50 @@ class GET {
           err.message || "Some Error in getPositions function of db_get.js 1"
         );
       }
-      connection.query(
-        "SELECT * FROM tbl_position WHERE market_name = ?",
-        [market_name],
-        async (err, res) => {
-          if (err) {
-            connection.destroy();
-            callback(null);
-            return logger.error(
-              who,
-              err.message || "Some Error in getPosition function of db_get.js 2"
-            );
-          }
-          if (res.length) {
-            var string = JSON.stringify(res);
-            var json = JSON.parse(string);
-            connection.destroy();
-            return callback(json);
-          } else {
-            connection.destroy();
-            return callback(null);
-          }
+      if (data["status"] === "all") {
+        query =
+          "SELECT * FROM tbl_position WHERE market_name = ? AND NOT status = 4 AND NOT status = 7";
+        bind = [data["market_name"]];
+      } else {
+        query =
+          "SELECT * FROM tbl_position WHERE market_name = ? AND status = ?";
+        bind = [data["market_name"], data["status"]];
+      }
+      connection.query(query, bind, async (err, res) => {
+        if (err) {
+          connection.destroy();
+          callback(null);
+          return logger.error(
+            who,
+            err.message || "Some Error in getPosition function of db_get.js 2"
+          );
         }
-      );
+        if (res.length) {
+          var string = JSON.stringify(res);
+          var json = JSON.parse(string);
+          connection.destroy();
+          return callback(json);
+        } else {
+          connection.destroy();
+          return callback(null);
+        }
+      });
     });
   }
 
-  async favMarket(algo, callback) {
+  async favMarket(callback) {
     this.pool.getConnection(async function (err, connection) {
       if (err) {
         connection.destroy();
+        callback(null);
         return logger.error(
           who,
           err.message || "Some Error in getPositions function of db_get.js 1"
         );
       }
       connection.query(
-        "SELECT * FROM tbl_fav WHERE status = ? AND algo = ?",
-        ["active", algo['algo']],
+        "SELECT * FROM tbl_fav WHERE status = ?",
+        ["active"],
         async (err, res) => {
           if (err) {
             connection.destroy();
@@ -207,7 +215,7 @@ class GET {
     });
   }
 
-  async allTrades(callback) {
+  async allTrades(data, callback) {
     this.pool.getConnection(async function (err, connection) {
       if (err) {
         connection.destroy();
@@ -216,28 +224,32 @@ class GET {
           err.message || "Some Error in allTrades function of db_get.js 1"
         );
       }
-      connection.query("SELECT * FROM tbl_trades", async (err, res) => {
-        connection.destroy();
-        if (err) {
-          callback(null);
-          return logger.error(
-            who,
-            err.message || "Some Error in allTrades function of db_get.js 2"
-          );
-        }
-        if (res.length) {
-          var string = JSON.stringify(res);
-          var json = JSON.parse(string);
+      connection.query(
+        "SELECT * FROM tbl_trades WHERE side = ?",
+        [data["side"]],
+        async (err, res) => {
+          connection.destroy();
+          if (err) {
+            callback(null);
+            return logger.error(
+              who,
+              err.message || "Some Error in allTrades function of db_get.js 2"
+            );
+          }
+          if (res.length) {
+            var string = JSON.stringify(res);
+            var json = JSON.parse(string);
 
-          return callback(json);
-        } else {
-          logger.warning(who, "data in allTrades table not found");
-          return callback(null);
+            return callback(json);
+          } else {
+            logger.warning(who, "data in allTrades table not found");
+            return callback(null);
+          }
         }
-      });
+      );
     });
   }
-  async User(data,callback) {
+  async User(data, callback) {
     this.pool.getConnection(async function (err, connection) {
       if (err) {
         connection.destroy();
@@ -248,7 +260,7 @@ class GET {
       }
       connection.query(
         "SELECT * FROM tbl_user WHERE id = ?",
-        [data['id']],
+        [data["id"]],
         async (err, res) => {
           connection.destroy();
           if (err) {
@@ -270,6 +282,37 @@ class GET {
           }
         }
       );
+    });
+  }
+  async getSettings(callback) {
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        connection.destroy();
+        return logger.error(
+          who,
+          err.message || "Some Error in getSettings function of db_get.js 1"
+        );
+      }
+      connection.query("SELECT * FROM tbl_settings", async (err, res) => {
+        if (err) {
+          connection.destroy();
+          callback(null);
+          return logger.error(
+            who,
+            err.message || "Some Error in getSettings function of db_get.js 2"
+          );
+        }
+        if (res.length) {
+          var string = JSON.stringify(res);
+          var json = JSON.parse(string);
+          connection.destroy();
+          return callback(json);
+        } else {
+          logger.warning(who, "data in settings table not found");
+          connection.destroy();
+          return callback(null);
+        }
+      });
     });
   }
 }

@@ -1,23 +1,23 @@
 module.exports = (app) => {
-  const controllers = require("../controllers/controllers.js")
+  const controllers = require("../controllers/controllers.js");
 
-  var router = require("express").Router()
+  var router = require("express").Router();
 
   // Get positions
-  router.post("/getposition", controllers.getPosition)
+  router.post("/getposition", controllers.getPosition);
 
   // add log
-  router.post("/postlog", controllers.postLog)
+  router.post("/postlog", controllers.postLog);
 
   // get fav market
-  router.post("/getfav", controllers.getFav)
+  router.get("/getfav", controllers.getFav);
 
-  //add signal
-  router.post("/postsignal", controllers.postSignal)
-  
-  // update fav
-  router.post("/updatefav", controllers.updateFav)
-  
+
+  //update position
+  router.post("/updateposition", controllers.updatePosition);
+
+  //insert position
+  router.post("/insertposition", controllers.insertPosition);
   // // Retrieve all Tutorials
   // router.get("/", controllers.findAll);
 
@@ -36,5 +36,5 @@ module.exports = (app) => {
   // // Delete all Tutorials
   // router.delete("/", controllers.deleteAll);
 
-  app.use("/api", router)
-}
+  app.use("/api", router);
+};

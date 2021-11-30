@@ -117,6 +117,124 @@ class UPDATE {
       });
     });
   }
+  async updatePosition(data, callback) {
+    const timeStamp = Math.floor((Date.now() / 1000) | 0);
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        callback(null);
+        connection.destroy();
+        return logger.error(who, err);
+      }
+
+      /**
+       *  @id @buy_price @sell_price @can_buy
+       *
+       */
+      connection.query(
+        "UPDATE tbl_position SET buy_price = ?, sell_price = ?, can_buy = ?, timestamp = ?, buffer = ? WHERE id = ?",
+        [
+          data["buy_price"],
+          data["sell_price"],
+          data["can_buy"],
+          timeStamp,
+          data["buffer"],
+          data["id"],
+        ],
+        (err, res) => {
+          connection.destroy();
+          if (err) {
+            logger.error(who, err.message);
+            return callback({ status: "null" });
+          }
+          if (res.affectedRows == 0) {
+            var errs = "id not found";
+            logger.warning(who, errs);
+            return callback({ status: errs.message });
+          } else {
+            return callback({ status: "success" });
+          }
+        }
+      );
+    });
+  }
+
+
+  async updatePositionStatus(data, callback) {
+    const timeStamp = Math.floor((Date.now() / 1000) | 0);
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        callback(null);
+        connection.destroy();
+        return logger.error(who, err);
+      }
+
+      /**
+       *  @status @id
+       *
+       */
+      connection.query(
+        "UPDATE tbl_position SET status = ?, timestamp = ? WHERE id = ?",
+        [data["status"], timeStamp, data["id"]],
+        (err, res) => {
+          connection.destroy();
+          if (err) {
+            logger.error(who, err.message);
+            return callback({ status: "null" });
+          }
+          if (res.affectedRows == 0) {
+            var errs = "id not found";
+            logger.warning(who, errs);
+            return callback({ status: errs.message });
+          } else {
+            return callback({ status: "success" });
+          }
+        }
+      );
+    });
+  }
+
+  async updatePositionAfterBought(data, callback) {
+    const timeStamp = Math.floor((Date.now() / 1000) | 0);
+    this.pool.getConnection(async function (err, connection) {
+      if (err) {
+        callback(null);
+        connection.destroy();
+        return logger.error(who, err);
+      }
+
+      /**
+       *  @id @buy_price @sell_price @can_buy
+       *
+       */
+
+      connection.query(
+        "UPDATE tbl_position SET bought_at = ?, quantity = ?, status = ?, position_cleared = ?, timestamp = ?, trade_id = ? WHERE id = ?",
+        [
+          data["bought_at"],
+          data["quantity"],
+          data["status"],
+          data["position_cleared"],
+          timeStamp,
+          data["trade_id"],
+          data["id"],
+        ],
+        (err, res) => {
+          connection.destroy();
+          if (err) {
+            logger.error(who, err.message);
+            return callback({ status: "null" });
+          }
+          if (res.affectedRows == 0) {
+            var errs = "id not found";
+            logger.warning(who, errs);
+            return callback({ status: errs.message });
+          } else {
+            return callback({ status: "success" });
+          }
+        }
+      );
+    });
+  }
 }
 
 module.exports = UPDATE;
